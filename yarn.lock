@@ -775,9 +775,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nedcloarbr/nestjs-tools@workspace:.":
+"@nedcloarbr/nestjs-toolkit@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@nedcloarbr/nestjs-tools@workspace:."
+  resolution: "@nedcloarbr/nestjs-toolkit@workspace:."
   dependencies:
     "@biomejs/biome": "npm:^2.2.2"
     "@nedcloarbr/biome-config": "npm:^2.0.1"
@@ -787,6 +787,8 @@ __metadata:
     "@nestjs/schematics": "npm:^11.0.7"
     "@types/inquirer": "npm:^9.0.9"
     "@types/node": "npm:^22.18.0"
+    chalk: "npm:^5.6.0"
+    commander: "npm:^14.0.0"
     globals: "npm:^16.3.0"
     nest-commander: "npm:^3.19.0"
     reflect-metadata: "npm:^0.2.2"
@@ -796,6 +798,8 @@ __metadata:
     ts-node: "npm:^10.9.2"
     tsconfig-paths: "npm:^4.2.0"
     typescript: "npm:^5.9.2"
+  bin:
+    nestjs-toolkit: dist/src/main.js
   languageName: unknown
   linkType: soft
 
@@ -1710,7 +1714,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^5.3.0":
+"chalk@npm:^5.3.0, chalk@npm:^5.6.0":
   version: 5.6.0
   resolution: "chalk@npm:5.6.0"
   checksum: 10c0/f8558fc12fd9805f167611803b325b0098bbccdc9f1d3bafead41c9bac61f263357f3c0df0cbe28bc2fd5fca3edcf618b01d6771a5a776b4c15d061482a72b23
@@ -1842,6 +1846,13 @@ __metadata:
   version: 4.1.1
   resolution: "commander@npm:4.1.1"
   checksum: 10c0/84a76c08fe6cc08c9c93f62ac573d2907d8e79138999312c92d4155bc2325d487d64d13f669b2000c9f8caf70493c1be2dac74fec3c51d5a04f8bc3ae1830bab
+  languageName: node
+  linkType: hard
+
+"commander@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "commander@npm:14.0.0"
+  checksum: 10c0/73c4babfa558077868d84522b11ef56834165d472b9e86a634cd4c3ae7fc72d59af6377d8878e06bd570fe8f3161eced3cbe383c38f7093272bb65bd242b595b
   languageName: node
   linkType: hard
 
@@ -3055,8 +3066,8 @@ __metadata:
   linkType: hard
 
 "nest-commander@npm:^3.19.0":
-  version: 3.19.0
-  resolution: "nest-commander@npm:3.19.0"
+  version: 3.19.1
+  resolution: "nest-commander@npm:3.19.1"
   dependencies:
     "@fig/complete-commander": "npm:^3.0.0"
     "@golevelup/nestjs-discovery": "npm:4.0.3"
@@ -3067,7 +3078,7 @@ __metadata:
     "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
     "@nestjs/core": ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
     "@types/inquirer": ^8.1.3
-  checksum: 10c0/3859815d1c1cf069f95dde3d7b262d2a077d0eaac78d979d90e0e54d873aa052f1f96c5e270304c359bcf8737598bfd38f2d50fb75de7b9c62913ca9c0dcba1d
+  checksum: 10c0/36e24a41ab1b260940396713a3b23a7bbd2f40637f00ea4a209d7d574e75b539d8630689d6873fb73b80ed00cf5525b2207382c02f2e3369369403932554530e
   languageName: node
   linkType: hard
 
