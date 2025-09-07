@@ -5,6 +5,7 @@ import {
 	InquirerService,
 	Option,
 } from "nest-commander";
+import { CommandExtra } from "../common/decorators/command-extras.decorator";
 import { ConfigService } from "../services";
 import { ConfigFile } from "../types/config";
 
@@ -14,8 +15,11 @@ interface Options {
 
 @Command({
 	name: "init",
-	description: "Initialize the config file",
+	description: "Initialize the CLI config file",
 	aliases: ["i"],
+})
+@CommandExtra({
+	category: "config",
 })
 export class InitCommand extends CommandRunner {
 	public constructor(
