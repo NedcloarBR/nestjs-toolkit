@@ -1,10 +1,9 @@
-import type { INestApplicationContext } from "@nestjs/common";
 import chalk from "chalk";
-import { getAllCommands } from "./all-commands";
+import type { CommandType } from "../types/commands";
 import { banner } from "./banner";
 
-export function commandHelp(app: INestApplicationContext, cmd) {
-	const command = getAllCommands(app).find((c) => c.name === cmd.name());
+export function commandHelp(commands: CommandType[], cmd) {
+	const command = commands.find((c) => c.name === cmd.name());
 
 	if (!command) return chalk.red("Command not found.");
 

@@ -2,6 +2,7 @@ import { CommandFactory } from "nest-commander";
 import { Commander } from "nest-commander/src/constants";
 import { version } from "../package.json";
 import { AppModule } from "./app.module";
+import { CommandsService } from "./cli/services/commands.service";
 import { categorizedHelp } from "./cli/ui";
 import { commandHelp } from "./cli/ui/command-help";
 
@@ -12,11 +13,12 @@ async function bootstrap() {
 		helpConfiguration: {
 			formatHelp: (cmd, _helper) => {
 				const commander = app.get(Commander);
+				const commandsService = app.get(CommandsService);
 				if (cmd === commander) {
-					return categorizedHelp(app, commander.name());
+					return categorizedHelp(commandsService.getAll(), commander.name());
 				}
 
-				return commandHelp(app, cmd);
+				return commandHelp(commandsService.getAll(), cmd);
 			},
 		},
 	});

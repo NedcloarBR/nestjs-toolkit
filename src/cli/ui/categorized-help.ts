@@ -1,14 +1,11 @@
-import type { INestApplicationContext } from "@nestjs/common";
 import chalk from "chalk";
-import { getAllCommands } from "./all-commands";
+import type { CommandType } from "../types/commands";
 import { banner } from "./banner";
 
 export function categorizedHelp(
-	app: INestApplicationContext,
+	commands: CommandType[],
 	cliName: string,
 ): string {
-	const commands = getAllCommands(app);
-
 	const groupedCommands = commands.reduce(
 		(groups, command) => {
 			const category = command.category || "other";
