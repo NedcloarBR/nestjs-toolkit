@@ -2,16 +2,21 @@ import { CommandFactory } from "nest-commander";
 import { Commander } from "nest-commander/src/constants";
 import { version } from "../package.json";
 import { AppModule } from "./app.module";
-import { banner, categorizedHelp } from "./cli/ui";
+import { categorizedHelp } from "./cli/ui";
+import { commandHelp } from "./cli/ui/command-help";
 
 async function bootstrap() {
 	const app = await CommandFactory.createWithoutRunning(AppModule, {
 		cliName: "nestjs-toolkit",
 		version,
 		helpConfiguration: {
-			formatHelp: (cmd, helper) => {
-				console.info(banner);
-				return categorizedHelp(app);
+			formatHelp: (cmd, _helper) => {
+				const commander = app.get(Commander);
+				if (cmd === commander) {
+					return categorizedHelp(app, commander.name());
+				}
+
+				return commandHelp(app, cmd);
 			},
 		},
 	});

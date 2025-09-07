@@ -1,8 +1,12 @@
 import type { INestApplicationContext } from "@nestjs/common";
 import chalk from "chalk";
 import { getAllCommands } from "./all-commands";
+import { banner } from "./banner";
 
-export function categorizedHelp(app: INestApplicationContext): string {
+export function categorizedHelp(
+	app: INestApplicationContext,
+	cliName: string,
+): string {
 	const commands = getAllCommands(app);
 
 	const groupedCommands = commands.reduce(
@@ -29,6 +33,8 @@ export function categorizedHelp(app: INestApplicationContext): string {
 		"Description".length,
 		...commands.map((c) => c.description?.length ?? 0),
 	);
+
+	const message = `List of available commands:`;
 
 	const top = `┌${"─".repeat(maxCategoryLength + 2)}┬${"─".repeat(maxNameLength + 2)}┬${"─".repeat(maxDescLength + 2)}┐`;
 
@@ -68,7 +74,11 @@ export function categorizedHelp(app: INestApplicationContext): string {
 
 	const bottom = `└${"─".repeat(maxCategoryLength + 2)}┴${"─".repeat(maxNameLength + 2)}┴${"─".repeat(maxDescLength + 2)}┘`;
 
-	return [top, header, separator, ...rows, bottom].join("\n").concat("\n");
+	const footer = `\nRun ${chalk.green(`${cliName} <command> --help`)} for more information on a command.\n`;
+
+	return [banner, message, top, header, separator, ...rows, bottom, footer]
+		.join("\n")
+		.concat("\n");
 }
 
 function pad(str: string, length: number): string {
