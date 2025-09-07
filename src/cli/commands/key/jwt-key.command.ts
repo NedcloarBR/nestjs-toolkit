@@ -17,6 +17,8 @@ export class JwtKeyCommand extends CommandRunner {
 	}
 
 	public async run(): Promise<void> {
-		KeyUtils.addToEnv("JWT_SECRET", this.configService);
+		if (KeyUtils.addToEnv("JWT_SECRET", this.configService)) {
+			console.log("JWT_SECRET generated and added to .env");
+		}
 	}
 }

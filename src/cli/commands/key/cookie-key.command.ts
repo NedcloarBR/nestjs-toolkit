@@ -17,6 +17,8 @@ export class CookieKeyCommand extends CommandRunner {
 	}
 
 	public async run(): Promise<void> {
-		KeyUtils.addToEnv("COOKIE_SECRET", this.configService);
+		if (KeyUtils.addToEnv("COOKIE_SECRET", this.configService)) {
+			console.log("COOKIE_SECRET generated and added to .env");
+		}
 	}
 }

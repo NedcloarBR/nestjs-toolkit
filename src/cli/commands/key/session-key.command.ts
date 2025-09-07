@@ -17,6 +17,8 @@ export class SessionKeyCommand extends CommandRunner {
 	}
 
 	public async run(): Promise<void> {
-		KeyUtils.addToEnv("SESSION_SECRET", this.configService);
+		if (KeyUtils.addToEnv("SESSION_SECRET", this.configService)) {
+			console.log("SESSION_SECRET generated and added to .env");
+		}
 	}
 }
