@@ -1,2 +1,2 @@
-export { InitCommand } from "./init.command";
+export * from "./config";
 export * from "./key";
