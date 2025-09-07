@@ -7,7 +7,7 @@ export class KeyUtils {
 		return randomBytes(32).toString("hex");
 	}
 
-	public static addToEnv(key: string, configService: ConfigService) {
+	public static addToEnv(key: string, configService: ConfigService): boolean {
 		const kv = `${key}=${KeyUtils.genKey()}`;
 
 		const envContent = configService
@@ -31,5 +31,7 @@ export class KeyUtils {
 			configService.readConfigFile().envFilePath,
 			newEnvContent,
 		);
+
+		return true;
 	}
 }

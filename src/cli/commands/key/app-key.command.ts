@@ -13,6 +13,8 @@ export class APPKeyCommand extends CommandRunner {
 	}
 
 	public async run(): Promise<void> {
-		KeyUtils.addToEnv("APP_SECRET", this.configService);
+		if (KeyUtils.addToEnv("APP_SECRET", this.configService)) {
+			console.log("APP_SECRET generated and added to .env");
+		}
 	}
 }
