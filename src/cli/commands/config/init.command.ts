@@ -7,6 +7,7 @@ import {
 } from "nest-commander";
 import { CommandExtra } from "../../common/decorators/command-extras.decorator";
 import { ConfigService } from "../../services";
+import { CommandCategories } from "../../types/categories";
 import { ConfigFile } from "../../types/config";
 
 interface Options {
@@ -19,7 +20,7 @@ interface Options {
 	aliases: ["i"],
 })
 @CommandExtra({
-	category: "config",
+	category: CommandCategories.CONFIG,
 })
 export class InitCommand extends CommandRunner {
 	public constructor(

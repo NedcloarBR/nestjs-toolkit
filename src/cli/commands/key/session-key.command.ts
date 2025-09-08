@@ -2,6 +2,7 @@
 import { Command, CommandRunner } from "nest-commander";
 import { CommandExtra } from "../../common/decorators/command-extras.decorator";
 import { ConfigService } from "../../services";
+import { CommandCategories } from "../../types/categories";
 import { KeyUtils } from "../../utils/key.utils";
 
 @Command({
@@ -9,7 +10,7 @@ import { KeyUtils } from "../../utils/key.utils";
 	description: "Generate a new Session key",
 })
 @CommandExtra({
-	category: "key",
+	category: CommandCategories.KEY,
 })
 export class SessionKeyCommand extends CommandRunner {
 	public constructor(private readonly configService: ConfigService) {
