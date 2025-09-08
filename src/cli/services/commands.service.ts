@@ -50,4 +50,8 @@ export class CommandsService implements OnModuleInit {
 	public getAll(): CommandType[] {
 		return this.commands;
 	}
+
+	public getByCategory(category: string): CommandType[] {
+		return this.commands.filter((cmd) => cmd.category === category);
+	}
 }

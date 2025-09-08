@@ -1,8 +1,12 @@
 import chalk from "chalk";
-import type { CommandType } from "../types/commands";
+import { CommandCategories, type CommandType } from "../types";
 import { banner } from "./banner";
 
-export function commandHelp(commands: CommandType[], cmd) {
+export function commandHelp(
+	commands: CommandType[],
+	cmd,
+	showBanner = true,
+): string {
 	const command = commands.find((c) => c.name === cmd.name());
 
 	if (!command) return chalk.red("Command not found.");
@@ -15,7 +19,7 @@ export function commandHelp(commands: CommandType[], cmd) {
 	}\n`;
 
 	const usage = `Usage: ${cmd.name()} ${cmd.usage()}`;
-	const options = cmd.options
+	let options = cmd.options
 		.map((option) => {
 			const flags = option.flags;
 			const description = option.description || chalk.gray("No description");
@@ -23,5 +27,11 @@ export function commandHelp(commands: CommandType[], cmd) {
 		})
 		.join("\n");
 
-	return [banner, metadata, aliases, usage, options].join("\n").concat("\n");
+	if (cmd.name() === "category") {
+		options += `\nAvailable categories: ${chalk.yellow([...new Set(Object.values(CommandCategories))].join(", "))}`;
+	}
+
+	return [showBanner ? banner : "", metadata, aliases, usage, options]
+		.join("\n")
+		.concat("\n");
 }
