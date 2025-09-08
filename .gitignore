@@ -41,7 +41,7 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 .env.local
-nestjs-tools.json
+nestjs-toolkit.json
 
 # temp directory
 .temp

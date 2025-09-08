@@ -12,7 +12,7 @@ export class ConfigService {
 	}
 
 	public getConfigFile(): string {
-		return path.join(process.cwd(), "nestjs-tools.json");
+		return path.join(process.cwd(), "nestjs-toolkit.json");
 	}
 
 	public createConfigFile(config: ConfigFile): void {
