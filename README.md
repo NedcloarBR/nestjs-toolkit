@@ -94,72 +94,58 @@ nestjs-toolkit <command> --help
 
 ### Configuration Commands
 
-#### `config:init`
-Initialize the CLI configuration file for your project.
+| Command | Description | Options | Usage |
+|---------|-------------|---------|-------|
+| `config:init` | Initialize the CLI configuration file for your project | `-f, --force` - Force initialization without confirmation | `nestjs-toolkit config:init [--force]` |
 
+**Example:**
 ```bash
+# Interactive initialization
 nestjs-toolkit config:init
 
 # Force initialization without confirmation
 nestjs-toolkit config:init --force
 ```
 
-**Options:**
-- `-f, --force` - Force the initialization without confirmation
-
 ### Key Generation Commands
 
-Generate secure cryptographic keys for various purposes:
+Generate secure cryptographic keys for various purposes. All commands automatically add the generated key to your `.env` file.
 
-#### `key:app`
-Generate a new application key.
+| Command | Description | Usage |
+|---------|-------------|-------|
+| `key:app` | Generate a new application key | `nestjs-toolkit key:app` |
+| `key:jwt` | Generate a new JWT (JSON Web Token) secret key | `nestjs-toolkit key:jwt` |
+| `key:session` | Generate a new session secret key | `nestjs-toolkit key:session` |
+| `key:cookie` | Generate a new cookie secret key | `nestjs-toolkit key:cookie` |
 
+**Example:**
 ```bash
-nestjs-toolkit key:app
-```
-
-#### `key:jwt`
-Generate a new JWT (JSON Web Token) secret key.
-
-```bash
+# Generate a JWT secret key
 nestjs-toolkit key:jwt
-```
 
-#### `key:session`
-Generate a new session secret key.
-
-```bash
+# Generate a session secret key
 nestjs-toolkit key:session
 ```
 
-#### `key:cookie`
-Generate a new cookie secret key.
-
-```bash
-nestjs-toolkit key:cookie
-```
-
-All key generation commands automatically add the generated key to your `.env` file.
-
 ### Help Commands
 
-#### `help:category`
-Display all commands from a specific category.
-
-```bash
-nestjs-toolkit help:category <category-name>
-
-# Show detailed information for each command
-nestjs-toolkit help:category <category-name> --detailed
-```
-
-**Options:**
-- `-d, --detailed` - Show detailed information for each command
+| Command | Description | Options | Usage |
+|---------|-------------|---------|-------|
+| `help:category` | Display all commands from a specific category | `-d, --detailed` - Show detailed information for each command | `nestjs-toolkit help:category <category-name> [--detailed]` |
 
 **Available Categories:**
 - `config` - Configuration management commands
 - `key` - Key generation commands
 - `help` - Help and documentation commands
+
+**Example:**
+```bash
+# List all key generation commands
+nestjs-toolkit help:category key
+
+# Show detailed information
+nestjs-toolkit help:category key --detailed
+```
 
 ## 📖 License
 
