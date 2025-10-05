@@ -3,8 +3,7 @@ import { Commander } from "nest-commander/src/constants";
 import { version } from "../package.json";
 import { AppModule } from "./app.module";
 import { CommandsService } from "./cli/services/commands.service";
-import { categorizedHelp } from "./cli/ui";
-import { commandHelp } from "./cli/ui/command-help";
+import { categorizedHelp, commandHelp } from "./cli/ui";
 
 async function bootstrap() {
 	const app = await CommandFactory.createWithoutRunning(AppModule, {
