@@ -1,12 +1,12 @@
 import { CommandFactory } from "nest-commander";
 import { Commander } from "nest-commander/src/constants";
 import { version } from "../package.json";
-import { AppModule } from "./app.module";
-import { CommandsService } from "./cli/services/commands.service";
+import { CommandsService } from "./cli/services";
 import { categorizedHelp, commandHelp } from "./cli/ui";
+import { CLIModule } from "./cli.module";
 
 async function bootstrap() {
-	const app = await CommandFactory.createWithoutRunning(AppModule, {
+	const app = await CommandFactory.createWithoutRunning(CLIModule, {
 		cliName: "nestjs-toolkit",
 		version,
 		helpConfiguration: {

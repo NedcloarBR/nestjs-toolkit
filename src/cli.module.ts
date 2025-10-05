@@ -10,4 +10,4 @@ const QuestionsMap = Object.values(Questions);
 @Module({
 	providers: [...CommandsMap, ...ServicesMap, ...QuestionsMap],
 })
-export class AppModule {}
+export class CLIModule {}
