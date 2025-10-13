@@ -1,6 +1,6 @@
 {
 	"name": "@nedcloarbr/nestjs-toolkit",
-	"version": "1.0.2",
+	"version": "1.0.0-0",
 	"description": "A collection of tools and utilities for NestJS applications.",
 	"author": "NedcloarBR",
 	"license": "MIT",
@@ -15,7 +15,7 @@
 		"biome:lint": "yarn biome lint ./",
 		"biome:check": "yarn biome check --write ./",
 		"test:command": "yarn build && node dist/src/main",
-		"release": "release-it",
+		"release": "yarn build && release-it",
 		"changelog": "git cliff --prepend ./CHANGELOG.md -l --current -c ./cliff.toml -r ."
 	},
 	"packageManager": "yarn@4.9.3",
