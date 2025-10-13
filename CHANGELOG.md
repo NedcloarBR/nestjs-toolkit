@@ -1,10 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-# [v1.0.0](https://github.com/NedcloarBR/nestjs-toolkit/commits/v1.0.0)
+# [1.0.0]
+(https://github.com/NedcloarBR/nestjs-toolkittree/v1.0.0) - (2025-10-13)
 
 ## Bug Fixes
 
+- Remove private field ([fbb8812](https://github.com/NedcloarBR/nestjs-toolkit/commit/fbb88127e4464000af877b1ac30cee2b9b9b777a))
 - Package name ([0bd7f79](https://github.com/NedcloarBR/nestjs-toolkit/commit/0bd7f7925235cdf913006cbde4d3aa993e090713))
 - Imports ([292f344](https://github.com/NedcloarBR/nestjs-toolkit/commit/292f3446332380bcbd7383a2881a0ac07f490f29))
 
