@@ -19,3 +19,4 @@ tsconfig.json
 tsconfig.build.json
 biome.json
 nestjs-toolkit.json
+logo.svg

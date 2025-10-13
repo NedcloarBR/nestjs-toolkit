@@ -1,6 +1,7 @@
 <h1 align="center">
   <br>
-  🛠️ NestJS Toolkit
+  <img src="https://github.com/NedcloarBR/nestjs-toolkit/blob/master/logo.svg" width="32px" alt="nestjs-toolkit logo"/> 
+  NestJS Toolkit
   <br>
 </h1>
 
