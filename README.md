@@ -26,7 +26,9 @@
   •
   <a href="#📝-commands">Commands</a>
   •
-  <a href="#📖-license">License</a>
+  <a href="#�-global-helpers">Global Helpers</a>
+  •
+  <a href="#�📖-license">License</a>
   •
   <a href="#🗞️-credits">Credits</a>
 </p>
@@ -46,6 +48,7 @@ If you liked the project, feel free to leave a ⭐ here on Github for it to grow
 - 🎯 **Interactive Prompts** - User-friendly interactive prompts for complex operations
 - 🔄 **Force Options** - Override confirmations when needed with force flags
 - 📊 **Detailed Help System** - Comprehensive help with category-based command display
+- 🔧 **Global Helpers** - Utility functions for async operations, dates, security, and strings that can be registered globally
 
 ## 📦 Installation
 
@@ -148,7 +151,156 @@ nestjs-toolkit help:category key
 nestjs-toolkit help:category key --detailed
 ```
 
-## 📖 License
+## � Global Helpers
+
+NestJS Toolkit provides a collection of utility functions that can be registered globally in your application. These helpers cover common tasks like async operations, date manipulation, security functions, and string utilities.
+
+### Registering Helpers
+
+You can register helpers globally in your application:
+
+```typescript
+import { registerHelpers } from '@nedcloarbr/nestjs-toolkit';
+
+// Register all helpers
+await registerHelpers({ verbose: true });
+
+// Register specific categories only
+await registerHelpers({
+  include: ['async', 'date'],
+  verbose: true
+});
+
+// Exclude specific categories
+await registerHelpers({
+  exclude: ['security'],
+  verbose: true
+});
+
+// Override existing globals
+await registerHelpers({
+  override: true,
+  verbose: true
+});
+```
+
+### Available Helper Categories
+
+#### 🔄 Async Helpers
+
+Utilities for handling asynchronous operations:
+
+| Function | Description | Example |
+|----------|-------------|---------|
+| `sleep(ms)` | Pauses execution for specified milliseconds | `await sleep(1000)` |
+| `retry(fn, attempts, delayMs)` | Retries a function with delays between attempts | `await retry(() => fetchData(), 3, 500)` |
+| `timeout(promise, ms)` | Races a promise against a timeout | `await timeout(fetchData(), 5000)` |
+
+**Example:**
+```typescript
+// Wait 2 seconds
+await sleep(2000);
+
+// Retry API call up to 5 times
+const data = await retry(() => api.getData(), 5, 1000);
+
+// Timeout after 10 seconds
+const result = await timeout(longRunningTask(), 10000);
+```
+
+#### 📅 Date Helpers
+
+Utilities for date manipulation and comparison:
+
+| Function | Description | Example |
+|----------|-------------|---------|
+| `now()` | Returns current date and time | `const date = now()` |
+| `today()` | Returns today's date in ISO format (YYYY-MM-DD) | `const dateStr = today()` |
+| `addDays(date, days)` | Adds days to a date | `addDays(new Date(), 7)` |
+| `subDays(date, days)` | Subtracts days from a date | `subDays(new Date(), 3)` |
+| `diffInDays(date1, date2)` | Calculates difference in days between dates | `diffInDays(date1, date2)` |
+| `isPast(date)` | Checks if date is in the past | `isPast(someDate)` |
+| `isFuture(date)` | Checks if date is in the future | `isFuture(someDate)` |
+
+**Example:**
+```typescript
+// Get current date
+const current = now();
+
+// Get today's date string
+const todayStr = today(); // "2025-10-13"
+
+// Add 7 days to current date
+const nextWeek = addDays(new Date(), 7);
+
+// Check if a date is in the past
+if (isPast(expirationDate)) {
+  console.log('Expired!');
+}
+```
+
+#### 🔒 Security Helpers
+
+Utilities for cryptographic operations and security:
+
+| Function | Description | Example |
+|----------|-------------|---------|
+| `randomHex(length)` | Generates random hexadecimal string | `randomHex(32)` |
+| `toSha256(input)` | Converts string to SHA-256 hash | `toSha256('password')` |
+| `mask(str, visible, maskChar)` | Masks a string leaving last N characters visible | `mask('1234567890', 4)` |
+
+**Example:**
+```typescript
+// Generate a 32-byte random hex string
+const token = randomHex(32);
+
+// Hash a password
+const hashedPassword = toSha256('myPassword123');
+
+// Mask sensitive data
+const maskedCard = mask('1234567890123456', 4); // "************3456"
+```
+
+#### 📝 String Helpers
+
+Utilities for string manipulation and formatting:
+
+| Function | Description | Example |
+|----------|-------------|---------|
+| `slugify(text)` | Converts text to URL-friendly slug | `slugify('Hello World!')` |
+| `capitalize(str)` | Capitalizes first character | `capitalize('hello')` |
+| `titleCase(str)` | Converts to title case | `titleCase('hello world')` |
+| `truncate(str, limit, suffix)` | Truncates string with suffix | `truncate('Long text', 5)` |
+
+**Example:**
+```typescript
+// Create URL-friendly slug
+const slug = slugify('Hello World!'); // "hello-world"
+
+// Capitalize first letter
+const capitalized = capitalize('hello'); // "Hello"
+
+// Convert to title case
+const title = titleCase('the quick brown fox'); // "The Quick Brown Fox"
+
+// Truncate long text
+const short = truncate('This is a very long text', 10); // "This is a..."
+```
+
+### Registration Options
+
+The `registerHelpers` function accepts the following options:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `include` | `string[]` | `[]` | Categories to include. If not set, all are included |
+| `exclude` | `string[]` | `[]` | Categories to exclude |
+| `verbose` | `boolean` | `false` | Enable verbose logging during registration |
+| `override` | `boolean` | `false` | Allow overwriting existing global functions |
+
+**Available categories:** `async`, `date`, `security`, `string`
+
+## �📖 License
 
 [MIT License](./LICENSE)
 

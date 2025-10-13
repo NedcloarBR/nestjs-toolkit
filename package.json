@@ -4,9 +4,17 @@
 	"description": "A collection of tools and utilities for NestJS applications.",
 	"author": "NedcloarBR",
 	"license": "MIT",
-	"bin": "dist/src/main.js",
+	"bin": "./dist/src/main.js",
+	"main": "./dist/src/index.js",
+	"types": "./dist/src/index.d.ts",
+	"files": [
+		"dist",
+		"typings"
+	],
 	"scripts": {
-		"build": "nest build",
+		"generate:helpers": "ts-node ./scripts/generate-typings.ts",
+		"build": "yarn generate:helpers && nest build && yarn postbuild",
+		"postbuild": "ts-node ./scripts/postbuild.ts",
 		"start": "nest start",
 		"start:dev": "nest start --watch",
 		"start:debug": "nest start --debug --watch",
@@ -45,6 +53,7 @@
 		"release-it": "^19.0.5",
 		"source-map-support": "^0.5.21",
 		"ts-loader": "^9.5.4",
+		"ts-morph": "^27.0.0",
 		"ts-node": "^10.9.2",
 		"tsconfig-paths": "^4.2.0",
 		"typescript": "^5.9.3"
