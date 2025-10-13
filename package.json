@@ -22,6 +22,10 @@
 	"engines": {
 		"node": ">=20"
 	},
+	"publishConfig": {
+		"registry": "https://registry.npmjs.org",
+		"access": "public"
+	},
 	"dependencies": {
 		"@nestjs/common": "^11.1.6",
 		"@nestjs/core": "^11.1.6",
