@@ -1,6 +1,8 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# [1.0.1](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.0.0...v1.0.1) - (2025-10-13)
+
 # [v1.0.0](https://github.com/NedcloarBR/nestjs-toolkit/commits/v1.0.0)
 
 ## Bug Fixes
