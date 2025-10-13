@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# [1.0.2](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.0.1...v1.0.2) - (2025-10-13)
+
+## Bug Fixes
+
+- Remove private field ([fbb8812](https://github.com/NedcloarBR/nestjs-toolkit/commit/fbb88127e4464000af877b1ac30cee2b9b9b777a))
+
 # [1.0.1](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.0.0...v1.0.1) - (2025-10-13)
 
 # [v1.0.0](https://github.com/NedcloarBR/nestjs-toolkit/commits/v1.0.0)
