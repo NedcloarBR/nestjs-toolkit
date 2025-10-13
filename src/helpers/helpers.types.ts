@@ -4,10 +4,10 @@
  */
 
 export enum HelperCategory {
-	ASYNC = "async",
-	DATE = "date",
-	SECURITY = "security",
-	STRING = "string",
+  ASYNC = "async",
+  DATE = "date",
+  SECURITY = "security",
+  STRING = "string",
 }
 
 export const HELPER_CATEGORIES = Object.values(HelperCategory);

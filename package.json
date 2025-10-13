@@ -4,12 +4,42 @@
 	"description": "A collection of tools and utilities for NestJS applications.",
 	"author": "NedcloarBR",
 	"license": "MIT",
-	"bin": "./dist/src/main.js",
+	"homepage": "https://github.com/NedcloarBR/nestjs-tools#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/NedcloarBR/nestjs-tools.git"
+	},
+	"bugs": {
+		"url": "https://github.com/NedcloarBR/nestjs-tools/issues"
+	},
+	"keywords": [
+		"nestjs",
+		"toolkit",
+		"cli",
+		"helpers",
+		"utilities",
+		"nest-commander",
+		"typescript",
+		"node",
+		"tools",
+		"configuration",
+		"key-generation",
+		"async",
+		"date",
+		"security",
+		"string"
+	],
+	"bin": {
+		"nestjs-toolkit": "./dist/src/main.js"
+	},
 	"main": "./dist/src/index.js",
 	"types": "./dist/src/index.d.ts",
 	"files": [
 		"dist",
-		"typings"
+		"typings",
+		"README.md",
+		"LICENSE.md",
+		"CHANGELOG.md"
 	],
 	"scripts": {
 		"generate:helpers": "ts-node ./scripts/generate-typings.ts",
