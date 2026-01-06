@@ -249,11 +249,11 @@ if (isPast(expirationDate)) {
 
 Utilities for cryptographic operations and security:
 
-| Function                       | Description                                      | Example                 |
-| ------------------------------ | ------------------------------------------------ | ----------------------- |
-| `randomHex(length)`            | Generates random hexadecimal string              | `randomHex(32)`         |
-| `toSha256(input)`              | Converts string to SHA-256 hash                  | `toSha256('password')`  |
-| `mask(str, visible, maskChar)` | Masks a string leaving last N characters visible | `mask('1234567890', 4)` |
+| Function                       | Description                                                                                   | Example                 |
+| ------------------------------ | --------------------------------------------------------------------------------------------- | ----------------------- |
+| `randomHex(length)`            | Generates random hexadecimal string                                                           | `randomHex(32)`         |
+| `toSha256(input)`              | Computes SHA-256 hash (NOT suitable for password hashing; use bcrypt or Argon2 for passwords) | `toSha256('example')`   |
+| `mask(str, visible, maskChar)` | Masks a string leaving last N characters visible                                              | `mask('1234567890', 4)` |
 
 **Example:**
 
@@ -281,12 +281,14 @@ Utilities for string manipulation and formatting:
 
 | `camelCase(str)` | Converts a string to camelCase | `camelCase('hello world') // 'helloWorld'` |
 | `pascalCase(str)` | Converts a string to PascalCase | `pascalCase('hello world') // 'HelloWorld'` |
-| `snakeCase(str)` | Converts a string to snake*case | `snakeCase('fooBar') // 'foo_bar'` |
+| `snakeCase(str)` | Converts a string to snake\*case | `snakeCase('fooBar') // 'foo_bar'` |
 | `kebabCase(str)` | Converts a string to kebab-case | `kebabCase('fooBar') // 'foo-bar'` |
-| `sanitizeFilename(str)` | Replace disallowed filename characters with `*`|`sanitizeFilename('my file!.txt') // 'my*file*.txt'`|
+| `sanitizeFilename(str)` | Replace disallowed filename characters with `_` | `sanitizeFilename('my file!.txt') // 'my_file_.txt'` |
 |`removeNonAscii(str)`| Remove non-ASCII characters from a string |`removeNonAscii('Café') // 'Caf'`|
 |`isEmpty(str)`| Returns true for null/undefined/empty/whitespace strings |`isEmpty('') // true`|
 |`isNotEmpty(str)`| Opposite of`isEmpty`|`isNotEmpty('hello') // true` |
+
+> Note: `snakeCase` and `kebabCase` in the helpers are simple implementations and may not handle all edge-cases (for example acronyms like `HTTPServer`, consecutive uppercase letters, or complex punctuation). For robust needs consider using a well-tested library such as `lodash` (`_.snakeCase` / `_.kebabCase`) or `change-case`.
 
 **Example:**
 
