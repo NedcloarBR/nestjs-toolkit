@@ -208,6 +208,67 @@ declare global {
   function titleCase(str: string): string;
 
   /**
+   * Converts a string to camelCase (lowercase first character, removes separators).
+   * @param str - The input string to convert.
+   * @returns The camelCased string.
+   * @example
+   * ```typescript
+   * camelCase("hello world") // "helloWorld"
+   * camelCase("Foo-bar_baz") // "fooBarBaz"
+   * camelCase("  multiple   separators--here") // "multipleSeparatorsHere"
+   * ```
+   */
+  function camelCase(str: string): string;
+
+  /**
+   * Converts a string to PascalCase (uppercase first character, uses `camelCase`).
+   * @param str - The input string to convert
+   * @returns The PascalCased string
+   * @example
+   * ```typescript
+   * pascalCase("hello world") // "HelloWorld"
+   * pascalCase("foo-bar") // "FooBar"
+   * ```
+   */
+  function pascalCase(str: string): string;
+
+  /**
+   * Converts a string to snake_case (underscores between words, lowercase).
+   * @param str - The input string to convert
+   * @returns The snake_cased string
+   * @example
+   * ```typescript
+   * snakeCase("Hello World") // "hello_world"
+   * snakeCase("fooBarBaz") // "foo_bar_baz"
+   * ```
+   */
+  function snakeCase(str: string): string;
+
+  /**
+   * Converts a string to kebab-case (hyphens between words, lowercase).
+   * @param str - The input string to convert
+   * @returns The kebab-cased string
+   * @example
+   * ```typescript
+   * kebabCase("Hello World") // "hello-world"
+   * kebabCase("fooBarBaz") // "foo-bar-baz"
+   * ```
+   */
+  function kebabCase(str: string): string;
+
+  /**
+   * Removes non-ASCII characters from a string.
+   * @param str - The string to process
+   * @returns The string containing only ASCII characters
+   * @example
+   * ```typescript
+   * removeNonAscii("Café") // "Caf"
+   * removeNonAscii("naïve — test") // "naive  test"
+   * ```
+   */
+  function removeNonAscii(str: string): string;
+
+  /**
    * Truncates a string to a specified length and adds a suffix if truncated.
    * @param str - The string to truncate
    * @param limit - The maximum length of the string
@@ -221,6 +282,18 @@ declare global {
    * ```
    */
   function truncate(str: string, limit: number, suffix: string): string;
+
+  /**
+   * Sanitizes a filename by replacing disallowed characters with an underscore.
+   * @param str - The filename to sanitize
+   * @returns The sanitized filename
+   * @example
+   * ```typescript
+   * sanitizeFilename("my file!.txt") // "my_file_.txt"
+   * sanitizeFilename("unsafe/<>name") // "unsafe__name"
+   * ```
+   */
+  function sanitizeFilename(str: string): string;
 }
 
 export {};
