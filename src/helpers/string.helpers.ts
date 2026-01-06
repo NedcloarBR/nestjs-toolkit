@@ -95,10 +95,12 @@ export function pascalCase(str: string): string {
  */
 export function snakeCase(str: string): string {
   return str
-    .replace(/\s+/g, "_")
+    .trim()
+    .replace(/[-_\s]+/g, "_")
     .replace(/([A-Z])/g, "_$1")
     .toLowerCase()
-    .replace(/^_/, "");
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "");
 }
 
 /**
@@ -114,6 +116,7 @@ export function snakeCase(str: string): string {
 export function kebabCase(str: string): string {
   return str
     .trim()
+    .replace(/_+/g, "-")
     .replace(/\s+/g, "-")
     .replace(/([A-Z])/g, "-$1")
     .toLowerCase()

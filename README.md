@@ -281,9 +281,9 @@ Utilities for string manipulation and formatting:
 
 | `camelCase(str)` | Converts a string to camelCase | `camelCase('hello world') // 'helloWorld'` |
 | `pascalCase(str)` | Converts a string to PascalCase | `pascalCase('hello world') // 'HelloWorld'` |
-| `snakeCase(str)` | Converts a string to snake\*case | `snakeCase('fooBar') // 'foo_bar'` |
+| `snakeCase(str)` | Converts a string to snake*case | `snakeCase('fooBar') // 'foo_bar'` |
 | `kebabCase(str)` | Converts a string to kebab-case | `kebabCase('fooBar') // 'foo-bar'` |
-| `sanitizeFilename(str)` | Replace disallowed filename characters with `_` | `sanitizeFilename('my file!.txt') // 'my_file_.txt'` |
+| `sanitizeFilename(str)` | Replace disallowed filename characters with `*`|`sanitizeFilename('my file!.txt') // 'my*file*.txt'`|
 |`removeNonAscii(str)`| Remove non-ASCII characters from a string |`removeNonAscii('Café') // 'Caf'`|
 |`isEmpty(str)`| Returns true for null/undefined/empty/whitespace strings |`isEmpty('') // true`|
 |`isNotEmpty(str)`| Opposite of`isEmpty`|`isNotEmpty('hello') // true` |
