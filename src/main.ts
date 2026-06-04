@@ -23,6 +23,7 @@ async function bootstrap() {
 	});
 
 	const commander = app.get(Commander);
+	commander.name("nestjs-toolkit");
 	commander.addHelpCommand(false);
 
 	CommandFactory.runApplication(app);
