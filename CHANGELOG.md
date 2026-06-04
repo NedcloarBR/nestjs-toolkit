@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# [1.3.1](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.3.0...v1.3.1) - (2026-06-04)
+
+## Bug Fixes
+
+- Move @nestjs/common and @nestjs/core to peerDependencies to prevent duplicate instances ([d60da1b](https://github.com/NedcloarBR/nestjs-toolkit/commit/d60da1bf31756660ad9d2107c5c3350485384f1f))
+
 # [1.3.0](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.2.1...v1.3.0) - (2026-06-04)
 
 ## Bug Fixes
