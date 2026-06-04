@@ -854,7 +854,7 @@ __metadata:
     tsconfig-paths: "npm:^4.2.0"
     typescript: "npm:^5.9.3"
   bin:
-    nestjs-toolkit: dist/src/main.js
+    nestjs-toolkit: ./dist/src/main.js
   languageName: unknown
   linkType: soft
 

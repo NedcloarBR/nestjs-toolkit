@@ -49,6 +49,7 @@ If you liked the project, feel free to leave a ⭐ here on Github for it to grow
 - 🔄 **Force Options** - Override confirmations when needed with force flags
 - 📊 **Detailed Help System** - Comprehensive help with category-based command display
 - 🔧 **Global Helpers** - Utility functions for async operations, dates, security, and strings that can be registered globally
+- 🧩 **Mixin Utilities** - Type-safe mixin composition with `CreateMixin`, `UseMixins`, `ComposeMixins`, and more
 
 ## 📦 Installation
 
@@ -299,6 +300,134 @@ The `registerHelpers` function accepts the following options:
 | `override` | `boolean` | `false` | Allow overwriting existing global functions |
 
 **Available categories:** `async`, `date`, `security`, `string`
+
+## 🧩 Mixin Utilities
+
+NestJS Toolkit provides type-safe mixin composition utilities. Mixins allow you to share behavior (methods and fields) across multiple classes without inheritance chains.
+
+### `CreateMixin`
+
+Wraps a class into a reusable mixin factory. The class can implement one or more interfaces to define its contract.
+
+```typescript
+import { CreateMixin, UseMixins } from '@nedcloarbr/nestjs-toolkit';
+
+// 1. Define the contract
+interface WithTimestamps {
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// 2. Implement the mixin class
+//    - Use `!` for fields set externally (e.g. TypeORM, ORMs)
+//    - Use initializers for fields with default values
+class TimestampsMixin implements WithTimestamps {
+  public createdAt!: Date;
+  public updatedAt!: Date;
+}
+
+// 3. Create the mixin factory
+export const WithTimestamps = CreateMixin(TimestampsMixin);
+```
+
+> **Declaration merging tip:** when the interface and class share the same name, TypeScript merges them — the `implements` check becomes circular and won't enforce missing fields. Use different names (e.g. `IWithTimestamps` / `TimestampsMixin`) if you want TypeScript to enforce the contract.
+
+### `UseMixins`
+
+Composes one or more mixin factories into a base class to extend from.
+
+```typescript
+// Single mixin
+class UserEntity extends UseMixins(WithTimestamps) {
+  id: number;
+  name: string;
+}
+
+// Multiple mixins — always use an array
+class PostEntity extends UseMixins([WithTimestamps, WithSoftDelete]) {
+  id: number;
+  title: string;
+}
+
+// Single mixin + base class (second argument must be a class, not a factory)
+class AdminEntity extends UseMixins(WithTimestamps, BaseEntity) {
+  role: string;
+}
+
+// Multiple mixins + base class
+class SuperEntity extends UseMixins([WithTimestamps, WithSoftDelete], BaseEntity) {
+  role: string;
+}
+```
+
+> **Important:** when composing multiple mixins, always wrap them in an array: `UseMixins([f1, f2])`.
+> `UseMixins(f1, f2)` matches the *single mixin + base class* overload, treating `f2` as the base class and causing a runtime error.
+
+### TypeORM example
+
+A common pattern in TypeORM projects:
+
+```typescript
+import { CreateMixin, UseMixins } from '@nedcloarbr/nestjs-toolkit';
+import { DeleteDateColumn, Index, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+
+// --- SoftDelete mixin ---
+interface IWithSoftDelete {
+  deletedAt: Date | null;
+}
+
+class SoftDeleteMixin implements IWithSoftDelete {
+  @Index()
+  @DeleteDateColumn({ name: 'deleted_at' })
+  public deletedAt!: Date | null;
+}
+
+export const WithSoftDelete = CreateMixin(SoftDeleteMixin);
+
+// --- Timestamps mixin ---
+interface IWithTimestamps {
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+class TimestampsMixin implements IWithTimestamps {
+  @CreateDateColumn({ name: 'created_at' })
+  public createdAt!: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  public updatedAt!: Date;
+}
+
+export const WithTimestamps = CreateMixin(TimestampsMixin);
+
+// --- Entity using both mixins ---
+@Entity('users')
+class UserEntity extends UseMixins([WithSoftDelete, WithTimestamps]) {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  name: string;
+}
+// UserEntity instances have: id, name, deletedAt, createdAt, updatedAt ✓
+```
+
+### API Reference
+
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `CreateMixin` | `CreateMixin(MixinClass)` | Wraps a class into a mixin factory |
+| `UseMixins` | `UseMixins(mixin)` | Extends a single mixin |
+| `UseMixins` | `UseMixins([...mixins])` | Composes multiple mixins |
+| `UseMixins` | `UseMixins([...mixins], Base)` | Composes mixins on top of a base class |
+
+### Exported types
+
+| Type | Description |
+|------|-------------|
+| `AbstractConstructor<T>` | `abstract new (...args: any[]) => T` — base type for mixin classes |
+| `Mixin<TAdded>` | Type of a mixin factory produced by `CreateMixin` |
+| `MixinReturn<TBase, TAdded>` | Return type of a mixin applied to a base class |
 
 ## �📖 License
 
