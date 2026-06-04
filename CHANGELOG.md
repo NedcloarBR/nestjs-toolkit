@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# [1.2.0](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.1.0...v1.2.0) - (2026-06-04)
+
+## Features
+
+- Add mixin utilities ([9226b5f](https://github.com/NedcloarBR/nestjs-toolkit/commit/9226b5fa5c7c5d848136b967136b5fb568e12bfd))
+
 # [1.0.0]
 (https://github.com/NedcloarBR/nestjs-toolkittree/v1.0.0) - (2025-10-13)
 
