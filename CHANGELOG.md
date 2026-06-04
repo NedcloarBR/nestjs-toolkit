@@ -1,6 +1,18 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# [1.3.0](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.2.1...v1.3.0) - (2026-06-04)
+
+## Bug Fixes
+
+- Set commander name explicitly to display correct binary name in help ([f005d7b](https://github.com/NedcloarBR/nestjs-toolkit/commit/f005d7bac9b98202943f1d45355f433fd558ba6e))
+
+## Features
+
+- Add utility types (Awaitable, Maybe, DeepPartial, Prettify, and more) ([a1e2ad0](https://github.com/NedcloarBR/nestjs-toolkit/commit/a1e2ad0fd19ace08094e0096fd1f4489717ef96a))
+- Add http param decorators (ClientIp, RequestId, Headers) ([0c9dc53](https://github.com/NedcloarBR/nestjs-toolkit/commit/0c9dc533f09c16b0054fae1c138337d068d047e4))
+- Add http utilities ([d90f0e1](https://github.com/NedcloarBR/nestjs-toolkit/commit/d90f0e1af526fb83b1968e0797fa59451f6889f4))
+
 # [1.2.1](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.2.0...v1.2.1) - (2026-06-04)
 
 ## Bug Fixes
