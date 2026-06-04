@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# [1.2.1](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.2.0...v1.2.1) - (2026-06-04)
+
+## Bug Fixes
+
+- Copy package.json to dist/ on postbuild to resolve runtime path error ([ba661cb](https://github.com/NedcloarBR/nestjs-toolkit/commit/ba661cb40d79638508ab8f7c73c0669f24a11bf4))
+
 # [1.2.0](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.1.0...v1.2.0) - (2026-06-04)
 
 ## Features
