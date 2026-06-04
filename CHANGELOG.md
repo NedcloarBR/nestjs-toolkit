@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# [1.3.2](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.3.1...v1.3.2) - (2026-06-04)
+
+## Bug Fixes
+
+- Remove @Injectable from classes instantiated manually to prevent DI resolution errors ([ab81364](https://github.com/NedcloarBR/nestjs-toolkit/commit/ab81364738d02eb915df9a43b57d971a760539e2))
+
 # [1.3.1](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.3.0...v1.3.1) - (2026-06-04)
 
 ## Bug Fixes
