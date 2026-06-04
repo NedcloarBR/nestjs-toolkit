@@ -1,11 +1,10 @@
-import { Injectable, type NestMiddleware, ServiceUnavailableException } from "@nestjs/common";
+import { type NestMiddleware, ServiceUnavailableException } from "@nestjs/common";
 
 export interface MaintenanceMiddlewareOptions {
 	enabled: boolean | (() => boolean);
 	message?: string;
 }
 
-@Injectable()
 export class MaintenanceMiddleware implements NestMiddleware {
 	private readonly options: Required<MaintenanceMiddlewareOptions>;
 

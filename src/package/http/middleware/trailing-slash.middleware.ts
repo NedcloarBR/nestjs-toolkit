@@ -1,5 +1,5 @@
 /** biome-ignore-all lint/correctness/noVoidTypeReturn: Middleware redirection */
-import { HttpStatus, Injectable, type NestMiddleware } from "@nestjs/common";
+import { HttpStatus, type NestMiddleware } from "@nestjs/common";
 
 export interface TrailingSlashMiddlewareOptions {
 	redirect?: boolean;
@@ -10,7 +10,6 @@ export interface TrailingSlashMiddlewareOptions {
 		| typeof HttpStatus.PERMANENT_REDIRECT;
 }
 
-@Injectable()
 export class TrailingSlashMiddleware implements NestMiddleware {
 	private readonly redirect: boolean;
 	private readonly statusCode: number;

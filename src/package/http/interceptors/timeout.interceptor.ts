@@ -1,14 +1,12 @@
 import {
 	type CallHandler,
 	type ExecutionContext,
-	Injectable,
 	type NestInterceptor,
 	RequestTimeoutException,
 } from "@nestjs/common";
 import { type Observable, TimeoutError, throwError } from "rxjs";
 import { catchError, timeout } from "rxjs/operators";
 
-@Injectable()
 export class TimeoutInterceptor implements NestInterceptor {
 	public constructor(private readonly ms: number = 5000) {}
 
