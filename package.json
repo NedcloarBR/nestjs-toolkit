@@ -53,7 +53,7 @@
 		"biome:lint": "yarn biome lint ./",
 		"biome:check": "yarn biome check --write ./",
 		"test:command": "yarn build && node dist/src/main",
-		"release": "yarn build && release-it",
+		"release": "yarn release-it",
 		"changelog": "git cliff --prepend ./CHANGELOG.md -l --current -c ./cliff.toml -r ."
 	},
 	"packageManager": "yarn@4.9.3",
