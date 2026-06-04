@@ -26,9 +26,13 @@
   •
   <a href="#📝-commands">Commands</a>
   •
-  <a href="#�-global-helpers">Global Helpers</a>
+  <a href="#🔧-global-helpers">Global Helpers</a>
   •
-  <a href="#�📖-license">License</a>
+  <a href="#🧩-mixin-utilities">Mixin Utilities</a>
+  •
+  <a href="#🌐-http-utilities">HTTP Utilities</a>
+  •
+  <a href="#📖-license">License</a>
   •
   <a href="#🗞️-credits">Credits</a>
 </p>
@@ -50,6 +54,7 @@ If you liked the project, feel free to leave a ⭐ here on Github for it to grow
 - 📊 **Detailed Help System** - Comprehensive help with category-based command display
 - 🔧 **Global Helpers** - Utility functions for async operations, dates, security, and strings that can be registered globally
 - 🧩 **Mixin Utilities** - Type-safe mixin composition with `CreateMixin`, `UseMixins`, `ComposeMixins`, and more
+- 🌐 **HTTP Utilities** - Adapter-agnostic base controller, filters, interceptors, middlewares, and param decorators
 
 ## 📦 Installation
 
@@ -152,13 +157,11 @@ nestjs-toolkit help:category key
 nestjs-toolkit help:category key --detailed
 ```
 
-## � Global Helpers
+## 🔧 Global Helpers
 
 NestJS Toolkit provides a collection of utility functions that can be registered globally in your application. These helpers cover common tasks like async operations, date manipulation, security functions, and string utilities.
 
 ### Registering Helpers
-
-You can register helpers globally in your application:
 
 ```typescript
 import { registerHelpers } from '@nedcloarbr/nestjs-toolkit';
@@ -167,29 +170,18 @@ import { registerHelpers } from '@nedcloarbr/nestjs-toolkit';
 await registerHelpers({ verbose: true });
 
 // Register specific categories only
-await registerHelpers({
-  include: ['async', 'date'],
-  verbose: true
-});
+await registerHelpers({ include: ['async', 'date'], verbose: true });
 
 // Exclude specific categories
-await registerHelpers({
-  exclude: ['security'],
-  verbose: true
-});
+await registerHelpers({ exclude: ['security'], verbose: true });
 
 // Override existing globals
-await registerHelpers({
-  override: true,
-  verbose: true
-});
+await registerHelpers({ override: true, verbose: true });
 ```
 
 ### Available Helper Categories
 
 #### 🔄 Async Helpers
-
-Utilities for handling asynchronous operations:
 
 | Function | Description | Example |
 |----------|-------------|---------|
@@ -197,21 +189,7 @@ Utilities for handling asynchronous operations:
 | `retry(fn, attempts, delayMs)` | Retries a function with delays between attempts | `await retry(() => fetchData(), 3, 500)` |
 | `timeout(promise, ms)` | Races a promise against a timeout | `await timeout(fetchData(), 5000)` |
 
-**Example:**
-```typescript
-// Wait 2 seconds
-await sleep(2000);
-
-// Retry API call up to 5 times
-const data = await retry(() => api.getData(), 5, 1000);
-
-// Timeout after 10 seconds
-const result = await timeout(longRunningTask(), 10000);
-```
-
 #### 📅 Date Helpers
-
-Utilities for date manipulation and comparison:
 
 | Function | Description | Example |
 |----------|-------------|---------|
@@ -223,26 +201,7 @@ Utilities for date manipulation and comparison:
 | `isPast(date)` | Checks if date is in the past | `isPast(someDate)` |
 | `isFuture(date)` | Checks if date is in the future | `isFuture(someDate)` |
 
-**Example:**
-```typescript
-// Get current date
-const current = now();
-
-// Get today's date string
-const todayStr = today(); // "2025-10-13"
-
-// Add 7 days to current date
-const nextWeek = addDays(new Date(), 7);
-
-// Check if a date is in the past
-if (isPast(expirationDate)) {
-  console.log('Expired!');
-}
-```
-
 #### 🔒 Security Helpers
-
-Utilities for cryptographic operations and security:
 
 | Function | Description | Example |
 |----------|-------------|---------|
@@ -250,21 +209,7 @@ Utilities for cryptographic operations and security:
 | `toSha256(input)` | Converts string to SHA-256 hash | `toSha256('password')` |
 | `mask(str, visible, maskChar)` | Masks a string leaving last N characters visible | `mask('1234567890', 4)` |
 
-**Example:**
-```typescript
-// Generate a 32-byte random hex string
-const token = randomHex(32);
-
-// Hash a password
-const hashedPassword = toSha256('myPassword123');
-
-// Mask sensitive data
-const maskedCard = mask('1234567890123456', 4); // "************3456"
-```
-
 #### 📝 String Helpers
-
-Utilities for string manipulation and formatting:
 
 | Function | Description | Example |
 |----------|-------------|---------|
@@ -273,24 +218,7 @@ Utilities for string manipulation and formatting:
 | `titleCase(str)` | Converts to title case | `titleCase('hello world')` |
 | `truncate(str, limit, suffix)` | Truncates string with suffix | `truncate('Long text', 5)` |
 
-**Example:**
-```typescript
-// Create URL-friendly slug
-const slug = slugify('Hello World!'); // "hello-world"
-
-// Capitalize first letter
-const capitalized = capitalize('hello'); // "Hello"
-
-// Convert to title case
-const title = titleCase('the quick brown fox'); // "The Quick Brown Fox"
-
-// Truncate long text
-const short = truncate('This is a very long text', 10); // "This is a..."
-```
-
 ### Registration Options
-
-The `registerHelpers` function accepts the following options:
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
@@ -313,15 +241,13 @@ Wraps a class into a reusable mixin factory. The class can implement one or more
 import { CreateMixin, UseMixins } from '@nedcloarbr/nestjs-toolkit';
 
 // 1. Define the contract
-interface WithTimestamps {
+interface IWithTimestamps {
   createdAt: Date;
   updatedAt: Date;
 }
 
 // 2. Implement the mixin class
-//    - Use `!` for fields set externally (e.g. TypeORM, ORMs)
-//    - Use initializers for fields with default values
-class TimestampsMixin implements WithTimestamps {
+class TimestampsMixin implements IWithTimestamps {
   public createdAt!: Date;
   public updatedAt!: Date;
 }
@@ -338,69 +264,66 @@ Composes one or more mixin factories into a base class to extend from.
 
 ```typescript
 // Single mixin
-class UserEntity extends UseMixins(WithTimestamps) {
-  id: number;
-  name: string;
-}
+class UserEntity extends UseMixins(WithTimestamps) {}
 
-// Multiple mixins — always use an array
-class PostEntity extends UseMixins([WithTimestamps, WithSoftDelete]) {
-  id: number;
-  title: string;
-}
+// Multiple mixins via rest params
+class PostEntity extends UseMixins(WithTimestamps, WithSoftDelete) {}
 
-// Single mixin + base class (second argument must be a class, not a factory)
-class AdminEntity extends UseMixins(WithTimestamps, BaseEntity) {
-  role: string;
-}
+// Multiple mixins via array
+class PostEntity extends UseMixins([WithTimestamps, WithSoftDelete]) {}
+
+// Single mixin + base class
+class AdminEntity extends UseMixins(WithTimestamps, BaseEntity) {}
 
 // Multiple mixins + base class
-class SuperEntity extends UseMixins([WithTimestamps, WithSoftDelete], BaseEntity) {
-  role: string;
-}
+class SuperEntity extends UseMixins([WithTimestamps, WithSoftDelete], BaseEntity) {}
 ```
 
-> **Important:** when composing multiple mixins, always wrap them in an array: `UseMixins([f1, f2])`.
-> `UseMixins(f1, f2)` matches the *single mixin + base class* overload, treating `f2` as the base class and causing a runtime error.
+### `ComposeMixins`
+
+Combines multiple mixin factories into a single reusable factory.
+
+```typescript
+import { ComposeMixins } from '@nedcloarbr/nestjs-toolkit';
+
+export const WithAudit = ComposeMixins(WithTimestamps, WithSoftDelete);
+
+class UserEntity extends UseMixins(WithAudit) {}
+```
+
+### `isMixin`
+
+Runtime check to determine if a value is a mixin factory.
+
+```typescript
+import { isMixin } from '@nedcloarbr/nestjs-toolkit';
+
+isMixin(WithTimestamps); // true
+isMixin(BaseEntity);     // false
+```
 
 ### TypeORM example
-
-A common pattern in TypeORM projects:
 
 ```typescript
 import { CreateMixin, UseMixins } from '@nedcloarbr/nestjs-toolkit';
 import { DeleteDateColumn, Index, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-// --- SoftDelete mixin ---
-interface IWithSoftDelete {
-  deletedAt: Date | null;
-}
-
-class SoftDeleteMixin implements IWithSoftDelete {
+class SoftDeleteMixin {
   @Index()
   @DeleteDateColumn({ name: 'deleted_at' })
   public deletedAt!: Date | null;
 }
-
 export const WithSoftDelete = CreateMixin(SoftDeleteMixin);
 
-// --- Timestamps mixin ---
-interface IWithTimestamps {
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-class TimestampsMixin implements IWithTimestamps {
+class TimestampsMixin {
   @CreateDateColumn({ name: 'created_at' })
   public createdAt!: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
   public updatedAt!: Date;
 }
-
 export const WithTimestamps = CreateMixin(TimestampsMixin);
 
-// --- Entity using both mixins ---
 @Entity('users')
 class UserEntity extends UseMixins([WithSoftDelete, WithTimestamps]) {
   @PrimaryGeneratedColumn()
@@ -414,22 +337,262 @@ class UserEntity extends UseMixins([WithSoftDelete, WithTimestamps]) {
 
 ### API Reference
 
-| Function | Signature | Description |
-|----------|-----------|-------------|
-| `CreateMixin` | `CreateMixin(MixinClass)` | Wraps a class into a mixin factory |
-| `UseMixins` | `UseMixins(mixin)` | Extends a single mixin |
-| `UseMixins` | `UseMixins([...mixins])` | Composes multiple mixins |
-| `UseMixins` | `UseMixins([...mixins], Base)` | Composes mixins on top of a base class |
+| Function/Type | Description |
+|---------------|-------------|
+| `CreateMixin(MixinClass)` | Wraps a class into a mixin factory |
+| `UseMixins(mixin)` | Extends a single mixin |
+| `UseMixins(f1, f2, ...)` | Composes multiple mixins via rest params |
+| `UseMixins([...mixins])` | Composes multiple mixins via array |
+| `UseMixins([...mixins], Base)` | Composes mixins on top of a base class |
+| `ComposeMixins(...mixins)` | Combines factories into a single reusable factory |
+| `isMixin(value)` | Returns `true` if value is a mixin factory |
+| `MixinType<T>` | Extracts the added type from a mixin factory |
+| `AbstractConstructor<T>` | `abstract new (...args: any[]) => T` |
+| `Mixin<TAdded>` | Type of a mixin factory |
+| `MixinReturn<TBase, TAdded>` | Return type of a mixin applied to a base class |
+| `ExtractAdded<T[]>` | Extracts and intersects added types from a mixin array |
+| `UnionToIntersection<U>` | Converts a union type to an intersection type |
+
+## 🌐 HTTP Utilities
+
+Adapter-agnostic HTTP utilities that work with both Express and Fastify adapters.
+
+### `BaseController`
+
+Abstract base class with standardized response helpers and exception shortcuts.
+
+```typescript
+import { BaseController } from '@nedcloarbr/nestjs-toolkit';
+
+@Controller('users')
+export class UsersController extends BaseController {
+  constructor(private readonly usersService: UsersService) {
+    super();
+  }
+
+  @Get()
+  async findAll(@Query() query: PaginationQuery) {
+    const result = await this.usersService.findAll(query);
+    return this.paginated(result); // compatible with nestjs-typeorm-paginate and nestjs-paginate
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    const user = await this.usersService.findOne(id);
+    if (!user) this.notFound(`User #${id} not found`);
+    return this.ok(user);
+  }
+
+  @Post()
+  async create(@Body() dto: CreateUserDto) {
+    const user = await this.usersService.create(dto);
+    return this.created(user);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@Param('id') id: string) {
+    await this.usersService.remove(id);
+    return this.noContent();
+  }
+}
+```
+
+#### Response helpers
+
+| Method | Status | Description |
+|--------|--------|-------------|
+| `ok(data, message?, path?)` | 200 | Standard success response |
+| `created(data, message?, path?)` | 201 | Resource created |
+| `accepted(data, message?, path?)` | 202 | Accepted for async processing |
+| `partialContent(data, message?, path?)` | 206 | Partial content / range response |
+| `noContent()` | 204 | No content (returns `null`) |
+| `paginated(result, message?, path?)` | 200 | Paginated response — accepts `nestjs-typeorm-paginate` and `nestjs-paginate` results |
+
+#### Exception shortcuts
+
+| Method | Throws |
+|--------|--------|
+| `notFound(message?)` | `NotFoundException` (404) |
+| `badRequest(message?)` | `BadRequestException` (400) |
+| `conflict(message?)` | `ConflictException` (409) |
+| `unprocessable(message?)` | `UnprocessableEntityException` (422) |
+| `forbidden(message?)` | `ForbiddenException` (403) |
+| `unauthorized(message?)` | `UnauthorizedException` (401) |
+
+### Filters
+
+Both filters use `HttpAdapterHost` to send responses in an adapter-agnostic way and must be injected via NestJS DI.
+
+#### `HttpExceptionFilter`
+
+Catches all `HttpException` instances and formats them into a standardized error response.
+
+#### `AllExceptionsFilter`
+
+Catches every unhandled exception. Logs unexpected errors and formats them consistently.
+
+```typescript
+// main.ts
+const { httpAdapter } = app.get(HttpAdapterHost);
+app.useGlobalFilters(
+  new AllExceptionsFilter(httpAdapter),   // catches everything else
+  new HttpExceptionFilter(httpAdapter),   // highest priority for HttpExceptions
+);
+
+// or via APP_FILTER (recommended — supports dependency injection)
+// app.module.ts
+providers: [
+  { provide: APP_FILTER, useClass: AllExceptionsFilter },
+  { provide: APP_FILTER, useClass: HttpExceptionFilter },
+]
+```
+
+**Error response shape:**
+
+```json
+{
+  "statusCode": 404,
+  "message": "User #42 not found",
+  "error": "Not Found",
+  "timestamp": "2026-06-04T00:00:00.000Z",
+  "path": "/users/42"
+}
+```
+
+### Interceptors
+
+#### `TransformInterceptor`
+
+Wraps raw controller responses into a standardized envelope. Automatically skips responses already formatted by `BaseController`.
+
+```typescript
+app.useGlobalInterceptors(new TransformInterceptor());
+```
+
+**Response shape:**
+
+```json
+{
+  "statusCode": 200,
+  "message": "OK",
+  "data": { ... },
+  "timestamp": "2026-06-04T00:00:00.000Z",
+  "path": "/users"
+}
+```
+
+#### `LoggingInterceptor`
+
+Logs every incoming request and outgoing response with duration. Automatically includes the `X-Request-ID` if `RequestIdMiddleware` is registered.
+
+```
+→ GET /users
+← GET /users 200 +12ms
+[uuid] → POST /users
+[uuid] ← POST /users 201 +45ms
+```
+
+#### `TimeoutInterceptor`
+
+Throws `RequestTimeoutException` if a handler exceeds the configured time limit.
+
+```typescript
+// Global — 5 seconds default
+app.useGlobalInterceptors(new TimeoutInterceptor());
+
+// Custom timeout
+app.useGlobalInterceptors(new TimeoutInterceptor(10000));
+```
+
+### Middlewares
+
+All middlewares implement `NestMiddleware` and work with both Express and Fastify adapters.
+
+#### `RequestIdMiddleware`
+
+Generates or propagates a `X-Request-ID` header. If the header is already present in the incoming request (e.g., from an upstream service), it is reused. The ID is also available as `request.requestId`.
+
+```typescript
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestIdMiddleware).forRoutes('*');
+  }
+}
+```
+
+#### `ClientIpMiddleware`
+
+Extracts the real client IP considering reverse proxy headers in priority order: `CF-Connecting-IP` → `X-Real-IP` → `X-Forwarded-For` → `X-Client-IP` → `remoteAddress`. The result is available as `request.clientIp`.
+
+```typescript
+consumer.apply(ClientIpMiddleware).forRoutes('*');
+```
+
+#### `MaintenanceMiddleware`
+
+Returns `503 Service Unavailable` when maintenance mode is active. Accepts a static boolean or a function evaluated on every request.
+
+```typescript
+// Via environment variable (checked per request)
+consumer
+  .apply(new MaintenanceMiddleware({
+    enabled: () => process.env.MAINTENANCE_MODE === 'true',
+    message: 'Service is temporarily unavailable. Please try again later.',
+  }))
+  .forRoutes('*');
+```
+
+#### `TrailingSlashMiddleware`
+
+Redirects or rewrites URLs with trailing slashes. Useful for normalizing routes and avoiding duplicate entries in logs and analytics.
+
+```typescript
+// Redirect /users/ → /users with 301 (default)
+consumer.apply(new TrailingSlashMiddleware()).forRoutes('*');
+
+// Silent rewrite without redirect
+consumer.apply(new TrailingSlashMiddleware({ redirect: false })).forRoutes('*');
+
+// Temporary redirect
+consumer.apply(new TrailingSlashMiddleware({ statusCode: HttpStatus.FOUND })).forRoutes('*');
+```
+
+### Param Decorators
+
+#### `@RequestId()`
+
+Extracts the request ID set by `RequestIdMiddleware`. Falls back to the `X-Request-ID` header if the middleware is not registered.
+
+#### `@ClientIp()`
+
+Extracts the client IP set by `ClientIpMiddleware`. Falls back to the native `req.ip` if the middleware is not registered.
+
+#### `@Headers(key?)`
+
+Extracts a specific header by key or all headers if no key is provided. Keys are normalized to lowercase.
+
+```typescript
+@Get('profile')
+getProfile(
+  @RequestId() requestId: string,
+  @ClientIp() ip: string,
+  @Headers('authorization') token: string,
+  @Headers() allHeaders: Record<string, string>,
+) {}
+```
 
 ### Exported types
 
 | Type | Description |
 |------|-------------|
-| `AbstractConstructor<T>` | `abstract new (...args: any[]) => T` — base type for mixin classes |
-| `Mixin<TAdded>` | Type of a mixin factory produced by `CreateMixin` |
-| `MixinReturn<TBase, TAdded>` | Return type of a mixin applied to a base class |
+| `StandardResponse<T>` | Envelope for `ok`, `created`, `accepted`, `partialContent` |
+| `PaginatedResponse<T>` | Envelope for `paginated` — includes `meta` and optional `links` |
+| `ErrorResponse` | Shape of error responses from the filters |
+| `PaginationLinks` | Links shape (`first`, `previous`, `current`, `next`, `last`) |
+| `PaginationResult<T>` | Union of `nestjs-typeorm-paginate` and `nestjs-paginate` result shapes |
 
-## �📖 License
+## 📖 License
 
 [MIT License](./LICENSE)
 
