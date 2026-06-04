@@ -81,6 +81,11 @@ yarn add -D @nedcloarbr/nestjs-toolkit
 
 - Node.js >= 20
 - npm or yarn
+- `@nestjs/common` >= 10
+- `@nestjs/core` >= 10
+- `reflect-metadata` >= 0.1
+
+> `@nestjs/common`, `@nestjs/core`, and `reflect-metadata` are peer dependencies — they must be installed in your project. If you already have a NestJS application, these are already present.
 
 ## 🚀 Usage
 
@@ -437,10 +442,10 @@ Catches every unhandled exception. Logs unexpected errors and formats them consi
 
 ```typescript
 // main.ts
-const { httpAdapter } = app.get(HttpAdapterHost);
+const httpAdapterHost = app.get(HttpAdapterHost);
 app.useGlobalFilters(
-  new AllExceptionsFilter(httpAdapter),   // catches everything else
-  new HttpExceptionFilter(httpAdapter),   // highest priority for HttpExceptions
+  new AllExceptionsFilter(httpAdapterHost),   // catches everything else
+  new HttpExceptionFilter(httpAdapterHost),   // highest priority for HttpExceptions
 );
 
 // or via APP_FILTER (recommended — supports dependency injection)
