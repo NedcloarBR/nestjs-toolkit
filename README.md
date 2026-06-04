@@ -32,6 +32,8 @@
   •
   <a href="#🌐-http-utilities">HTTP Utilities</a>
   •
+  <a href="#🔠-utility-types">Utility Types</a>
+  •
   <a href="#📖-license">License</a>
   •
   <a href="#🗞️-credits">Credits</a>
@@ -55,6 +57,7 @@ If you liked the project, feel free to leave a ⭐ here on Github for it to grow
 - 🔧 **Global Helpers** - Utility functions for async operations, dates, security, and strings that can be registered globally
 - 🧩 **Mixin Utilities** - Type-safe mixin composition with `CreateMixin`, `UseMixins`, `ComposeMixins`, and more
 - 🌐 **HTTP Utilities** - Adapter-agnostic base controller, filters, interceptors, middlewares, and param decorators
+- 🔠 **Utility Types** - Common TypeScript utility types (`Awaitable`, `Maybe`, `DeepPartial`, `Prettify`, and more)
 
 ## 📦 Installation
 
@@ -591,6 +594,100 @@ getProfile(
 | `ErrorResponse` | Shape of error responses from the filters |
 | `PaginationLinks` | Links shape (`first`, `previous`, `current`, `next`, `last`) |
 | `PaginationResult<T>` | Union of `nestjs-typeorm-paginate` and `nestjs-paginate` result shapes |
+
+## 🔠 Utility Types
+
+General-purpose TypeScript utility types exported from `@nedcloarbr/nestjs-toolkit`.
+
+### Nullability
+
+| Type | Definition | Description |
+|------|-----------|-------------|
+| `Nullable<T>` | `T \| null` | Value that can be null |
+| `Optional<T>` | `T \| undefined` | Value that can be undefined |
+| `Maybe<T>` | `T \| null \| undefined` | Value that can be null or undefined |
+
+```typescript
+type UserId = Nullable<number>;     // number | null
+type Config = Optional<AppConfig>;  // AppConfig | undefined
+type Result = Maybe<string>;        // string | null | undefined
+```
+
+### Async
+
+| Type | Definition | Description |
+|------|-----------|-------------|
+| `Awaitable<T>` | `T \| PromiseLike<T>` | Value that can be returned directly or as a promise |
+
+```typescript
+type Handler = () => Awaitable<void>;
+
+const sync: Handler = () => {};
+const async: Handler = async () => {};
+```
+
+### Partial Modifiers
+
+| Type | Description |
+|------|-------------|
+| `DeepPartial<T>` | Recursively makes all properties optional |
+| `PartialBy<T, K>` | Makes only the specified keys optional |
+| `RequiredBy<T, K>` | Makes only the specified keys required |
+
+```typescript
+// DeepPartial — useful for nested update DTOs
+type UpdateConfigDto = DeepPartial<AppConfig>;
+
+// PartialBy — id required, rest optional
+type UpdateUserDto = PartialBy<User, 'name' | 'email'>;
+
+// RequiredBy — address always required
+type CheckoutDto = RequiredBy<Partial<Order>, 'address'>;
+```
+
+### Extraction
+
+| Type | Description |
+|------|-------------|
+| `ValueOf<T>` | Union of all value types in an object |
+| `ArrayElement<T>` | Extracts the element type from an array type |
+| `Constructor<T>` | Concrete constructor type (`new (...args) => T`) |
+
+```typescript
+type Status = ValueOf<{ active: 'active'; inactive: 'inactive' }>; // "active" | "inactive"
+
+type Item = ArrayElement<User[]>; // User
+
+function create<T>(ctor: Constructor<T>): T {
+  return new ctor();
+}
+```
+
+### DX / Readability
+
+| Type | Description |
+|------|-------------|
+| `Prettify<T>` | Flattens intersection types into a single readable shape |
+| `Dict<T>` | Shorthand for `Record<string, T>` |
+
+```typescript
+// Without Prettify — hover shows: { id: number } & { name: string }
+// With Prettify — hover shows: { id: number; name: string }
+type User = Prettify<{ id: number } & { name: string }>;
+
+type Cache = Dict<number>; // Record<string, number>
+```
+
+### Mixin types
+
+| Type | Description |
+|------|-------------|
+| `AbstractConstructor<T>` | `abstract new (...args: any[]) => T` — base type for mixin classes |
+| `Mixin<TAdded>` | Type of a mixin factory produced by `CreateMixin` |
+| `MixinReturn<TBase, TAdded>` | Return type of a mixin applied to a base class |
+| `MixinType<T>` | Extracts the added type from a mixin factory |
+| `ExtractAdded<T[]>` | Extracts and intersects added types from a mixin array |
+| `UnionToIntersection<U>` | Converts a union type to an intersection type |
 
 ## 📖 License
 
