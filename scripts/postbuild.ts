@@ -20,6 +20,15 @@ async function main() {
 		console.error("❌ Failed to update dist/src/index.d.ts:", err);
 		process.exit(1);
 	}
+
+	// dist/src/main.js requires ../package.json → dist/package.json at runtime
+	try {
+		await fs.copyFile(path.resolve("package.json"), path.resolve("dist/package.json"));
+		console.log("✅ Copied package.json to dist/package.json");
+	} catch (err) {
+		console.error("❌ Failed to copy package.json to dist/:", err);
+		process.exit(1);
+	}
 }
 
 main();
