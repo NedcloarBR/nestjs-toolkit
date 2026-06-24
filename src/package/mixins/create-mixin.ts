@@ -11,6 +11,26 @@ export function isMixin(
 	return typeof value === "function" && (value as any)[MIXIN_FACTORY] === true;
 }
 
+// Rebind TypeORM metadata from the mixin class onto `Mixed` so columns/indices
+// declared on the mixin are resolved through the entity's prototype chain.
+function rebindOrmMetadata(MixinClass: any, Mixed: any): void {
+	const storage = (globalThis as any).typeormMetadataArgsStorage;
+	if (!storage) return;
+
+	for (const key of Object.keys(storage)) {
+		const entries = storage[key];
+		if (!Array.isArray(entries)) continue;
+
+		const rebound: any[] = [];
+		for (const entry of entries) {
+			if (entry && entry.target === MixinClass) {
+				rebound.push({ ...entry, target: Mixed });
+			}
+		}
+		if (rebound.length) entries.push(...rebound);
+	}
+}
+
 export function CreateMixin<TAdded>(
 	MixinClass: abstract new (...args: any[]) => TAdded,
 ): (base: AbstractConstructor) => AbstractConstructor<TAdded> {
@@ -35,6 +55,8 @@ export function CreateMixin<TAdded>(
 			);
 			if (descriptor) Object.defineProperty(Mixed.prototype, key, descriptor);
 		}
+
+		rebindOrmMetadata(MixinClass, Mixed);
 
 		return Mixed as any;
 	};
