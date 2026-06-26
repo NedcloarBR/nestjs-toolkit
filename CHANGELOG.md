@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# [1.3.4](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.3.3...v1.3.4) - (2026-06-26)
+
+## Features
+
+- **cli:** Add generic key command with custom env vars ([40f74d8](https://github.com/NedcloarBR/nestjs-toolkit/commit/40f74d8b9d3ff4cb9b0aba7b391d3c2fc0722224))
+
 # [1.3.3](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.3.2...v1.3.3) - (2026-06-24)
 
 ## Bug Fixes
