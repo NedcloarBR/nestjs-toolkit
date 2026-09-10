@@ -30,6 +30,14 @@
 		"string"
 	],
 	"bin": "./dist/src/main.js",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/src/index.d.ts",
+			"default": "./dist/src/index.js"
+		},
+		"./package.json": "./package.json"
+	},
 	"main": "./dist/src/index.js",
 	"types": "./dist/src/index.d.ts",
 	"files": [
