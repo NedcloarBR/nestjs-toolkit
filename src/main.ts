@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { CommandFactory } from "nest-commander";
 import { Commander } from "nest-commander/src/constants.js";
 import packageConfig from "../package.json" with { type: "json" };

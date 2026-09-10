@@ -29,9 +29,7 @@
 		"security",
 		"string"
 	],
-	"bin": {
-		"nestjs-toolkit": "./dist/src/main.js"
-	},
+	"bin": "./dist/src/main.js",
 	"main": "./dist/src/index.js",
 	"types": "./dist/src/index.d.ts",
 	"files": [
