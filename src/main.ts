@@ -1,5 +1,5 @@
 import { CommandFactory } from "nest-commander";
-import { Commander } from "nest-commander/src/constants";
+import { Commander } from "nest-commander/src/constants.js";
 import { version } from "../package.json";
 import { CommandsService } from "./cli/services/index.js";
 import { categorizedHelp, commandHelp } from "./cli/ui/index.js";

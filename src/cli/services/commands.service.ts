@@ -2,7 +2,7 @@ import { Injectable, type OnModuleInit } from "@nestjs/common";
 // biome-ignore lint/style/useImportType: Module Injection
 import { ModuleRef, Reflector } from "@nestjs/core";
 import { CommandRunner } from "nest-commander";
-import { CommandMeta } from "nest-commander/src/constants";
+import { CommandMeta } from "nest-commander/src/constants.js";
 import {
 	CommandExtraKey,
 	type CommandExtraOptions,
