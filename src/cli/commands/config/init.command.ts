@@ -5,10 +5,10 @@ import {
 	InquirerService,
 	Option,
 } from "nest-commander";
-import { CommandExtra } from "../../common/decorators/command-extras.decorator";
-import { ConfigService } from "../../services";
-import { CommandCategories } from "../../types/categories";
-import { ConfigFile } from "../../types/config";
+import { CommandExtra } from "../../common/decorators/command-extras.decorator.js";
+import { ConfigService } from "../../services/index.js";
+import { CommandCategories } from "../../types/categories.js";
+import { ConfigFile } from "../../types/config.js";
 
 interface Options {
 	force: boolean;

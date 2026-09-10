@@ -1,9 +1,9 @@
 import { CommandFactory } from "nest-commander";
 import { Commander } from "nest-commander/src/constants";
 import { version } from "../package.json";
-import { CommandsService } from "./cli/services";
-import { categorizedHelp, commandHelp } from "./cli/ui";
-import { CLIModule } from "./cli.module";
+import { CommandsService } from "./cli/services/index.js";
+import { categorizedHelp, commandHelp } from "./cli/ui/index.js";
+import { CLIModule } from "./cli.module.js";
 
 async function bootstrap() {
 	const app = await CommandFactory.createWithoutRunning(CLIModule, {

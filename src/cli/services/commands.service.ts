@@ -6,8 +6,8 @@ import { CommandMeta } from "nest-commander/src/constants";
 import {
 	CommandExtraKey,
 	type CommandExtraOptions,
-} from "../common/decorators/command-extras.decorator";
-import type { CommandType } from "../types/commands";
+} from "../common/decorators/command-extras.decorator.js";
+import type { CommandType } from "../types/commands.js";
 
 @Injectable()
 export class CommandsService implements OnModuleInit {

@@ -1,5 +1,5 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: mixin pattern requires any to compose arbitrary constructors
-import type { AbstractConstructor } from "../types";
+import type { AbstractConstructor } from "../types.js";
 
 export const MIXIN_FACTORY = Symbol.for(
 	"@nedcloarbr/nestjs-toolkit/mixin-factory",

@@ -6,13 +6,16 @@ import {
 	type NestInterceptor,
 } from "@nestjs/common";
 import { type Observable, tap } from "rxjs";
-import { REQUEST_ID_HEADER } from "../middleware/request-id.middleware";
+import { REQUEST_ID_HEADER } from "../middleware/request-id.middleware.js";
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
 	private readonly logger = new Logger(LoggingInterceptor.name);
 
-	public intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+	public intercept(
+		context: ExecutionContext,
+		next: CallHandler,
+	): Observable<unknown> {
 		const ctx = context.switchToHttp();
 		const request = ctx.getRequest();
 		const response = ctx.getResponse();
@@ -26,9 +29,14 @@ export class LoggingInterceptor implements NestInterceptor {
 			tap(() => {
 				const duration = Date.now() - start;
 				const statusCode = response.statusCode ?? response.raw?.statusCode;
-				const id = requestId ?? response.getHeader?.(REQUEST_ID_HEADER) ?? response.getHeader?.(REQUEST_ID_HEADER);
+				const id =
+					requestId ??
+					response.getHeader?.(REQUEST_ID_HEADER) ??
+					response.getHeader?.(REQUEST_ID_HEADER);
 				const logPrefix = id ? `[${id}] ` : "";
-				this.logger.log(`${logPrefix}← ${method} ${url} ${statusCode} +${duration}ms`);
+				this.logger.log(
+					`${logPrefix}← ${method} ${url} ${statusCode} +${duration}ms`,
+				);
 			}),
 		);
 	}

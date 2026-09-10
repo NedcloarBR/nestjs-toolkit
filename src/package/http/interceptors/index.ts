@@ -1,3 +1,3 @@
-export * from "./logging.interceptor";
-export * from "./timeout.interceptor";
-export * from "./transform.interceptor";
+export * from "./logging.interceptor.js";
+export * from "./timeout.interceptor.js";
+export * from "./transform.interceptor.js";

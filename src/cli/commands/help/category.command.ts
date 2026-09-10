@@ -1,10 +1,10 @@
 import chalk from "chalk";
 import { Command, CommandRunner, Option } from "nest-commander";
-import { CommandExtra } from "../../common/decorators/command-extras.decorator";
+import { CommandExtra } from "../../common/decorators/command-extras.decorator.js";
 // biome-ignore lint/style/useImportType: Dependency Injection
-import { CommandsService } from "../../services/commands.service";
-import { CommandCategories } from "../../types/categories";
-import { commandHelp } from "../../ui/command-help";
+import { CommandsService } from "../../services/commands.service.js";
+import { CommandCategories } from "../../types/categories.js";
+import { commandHelp } from "../../ui/command-help.js";
 
 interface Options {
 	detailed: boolean;

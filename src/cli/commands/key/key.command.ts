@@ -1,9 +1,9 @@
 /** biome-ignore-all lint/style/useImportType: Cannot use import type in dependency injection */
 import { Command, CommandRunner, Option } from "nest-commander";
-import { CommandExtra } from "../../common/decorators/command-extras.decorator";
-import { ConfigService } from "../../services";
-import { CommandCategories } from "../../types/categories";
-import { KeyUtils } from "../../utils/key.utils";
+import { CommandExtra } from "../../common/decorators/command-extras.decorator.js";
+import { ConfigService } from "../../services/index.js";
+import { CommandCategories } from "../../types/categories.js";
+import { KeyUtils } from "../../utils/key.utils.js";
 
 interface KeyOptions {
 	length?: number;

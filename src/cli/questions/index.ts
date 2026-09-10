@@ -1,2 +1,2 @@
-export { InitQuestions } from "./init.questions";
-export { RecreateQuestion } from "./recreate.question";
+export { InitQuestions } from "./init.questions.js";
+export { RecreateQuestion } from "./recreate.question.js";

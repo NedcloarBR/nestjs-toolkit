@@ -1,6 +1,6 @@
 import * as path from "node:path";
 import chalk from "chalk";
-import { HELPER_CATEGORIES, type HelperCategory } from "../helpers";
+import { HELPER_CATEGORIES, type HelperCategory } from "../helpers/index.js";
 
 export interface RegisterHelpersOptions {
 	/**

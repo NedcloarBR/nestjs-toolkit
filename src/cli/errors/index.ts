@@ -1,1 +1,1 @@
-export { ConfigNotExistsError } from "./config-not-exists.error";
+export { ConfigNotExistsError } from "./config-not-exists.error.js";

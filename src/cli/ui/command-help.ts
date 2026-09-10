@@ -1,6 +1,6 @@
 import chalk from "chalk";
-import { CommandCategories, type CommandType } from "../types";
-import { banner } from "./banner";
+import { CommandCategories, type CommandType } from "../types/index.js";
+import { banner } from "./banner.js";
 
 export function commandHelp(
 	commands: CommandType[],

@@ -7,7 +7,11 @@ import {
 	UnauthorizedException,
 	UnprocessableEntityException,
 } from "@nestjs/common";
-import type { PaginatedResponse, PaginationResult, StandardResponse } from "./types";
+import type {
+	PaginatedResponse,
+	PaginationResult,
+	StandardResponse,
+} from "./types.js";
 
 export abstract class BaseController {
 	protected ok<T>(data: T, message = "OK", path = ""): StandardResponse<T> {
@@ -20,7 +24,11 @@ export abstract class BaseController {
 		};
 	}
 
-	protected created<T>(data: T, message = "Created", path = ""): StandardResponse<T> {
+	protected created<T>(
+		data: T,
+		message = "Created",
+		path = "",
+	): StandardResponse<T> {
 		return {
 			statusCode: HttpStatus.CREATED,
 			message,
@@ -30,7 +38,11 @@ export abstract class BaseController {
 		};
 	}
 
-	protected accepted<T>(data: T, message = "Accepted", path = ""): StandardResponse<T> {
+	protected accepted<T>(
+		data: T,
+		message = "Accepted",
+		path = "",
+	): StandardResponse<T> {
 		return {
 			statusCode: HttpStatus.ACCEPTED,
 			message,
@@ -40,7 +52,11 @@ export abstract class BaseController {
 		};
 	}
 
-	protected partialContent<T>(data: T, message = "Partial Content", path = ""): StandardResponse<T> {
+	protected partialContent<T>(
+		data: T,
+		message = "Partial Content",
+		path = "",
+	): StandardResponse<T> {
 		return {
 			statusCode: HttpStatus.PARTIAL_CONTENT,
 			message,
@@ -54,7 +70,11 @@ export abstract class BaseController {
 		return null;
 	}
 
-	protected paginated<T>(result: PaginationResult<T>, message = "OK", path = ""): PaginatedResponse<T> {
+	protected paginated<T>(
+		result: PaginationResult<T>,
+		message = "OK",
+		path = "",
+	): PaginatedResponse<T> {
 		const data = "data" in result ? result.data : result.items;
 		const { meta, links } = result;
 		const total = meta.totalItems ?? ("itemCount" in meta ? meta.itemCount : 0);

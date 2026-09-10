@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 // biome-ignore lint/style/useImportType: Dependency injection
 import { HttpAdapterHost } from "@nestjs/core";
-import type { ErrorResponse } from "../types";
+import type { ErrorResponse } from "../types.js";
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -25,7 +25,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
 		if (typeof exceptionResponse === "string") {
 			message = exceptionResponse;
 			error = exception.message;
-		} else if (typeof exceptionResponse === "object" && exceptionResponse !== null) {
+		} else if (
+			typeof exceptionResponse === "object" &&
+			exceptionResponse !== null
+		) {
 			const res = exceptionResponse as Record<string, unknown>;
 			message = (res.message as string | string[]) ?? exception.message;
 			error = (res.error as string) ?? exception.name;
