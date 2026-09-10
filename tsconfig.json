@@ -4,8 +4,9 @@
 		"lib": ["ES2023"],
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
-		"module": "commonjs",
-		"moduleResolution": "node",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"resolvePackageJsonExports": true,
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
@@ -32,17 +33,10 @@
 		"noUncheckedIndexedAccess": false,
 		"skipLibCheck": true,
 		"skipDefaultLibCheck": true,
-		"baseUrl": "./",
-		"paths": {
-			"@/*": ["src/*"],
-			"@helpers/*": ["src/helpers/*"],
-			"@cli/*": ["src/cli/*"],
-			"@package/*": ["src/package/*"]
-		},
 		"incremental": false,
 		"types": ["node"],
 		"typeRoots": ["./node_modules/@types", "./typings"]
 	},
-	"include": ["src/**/*", "typings/**/*"],
+	"include": ["src/**/*", "scripts/**/*", "typings/**/*"],
 	"exclude": ["node_modules", "dist"]
 }

@@ -2,21 +2,21 @@
 	"$schema": "https://unpkg.com/release-it@19/schema/release-it.json",
 	"git": {
 		"commitMessage": "chore: release v${version}",
-    "requireBranch": "master",
+		"requireBranch": "master",
 		"requireCommits": true,
 		"tagName": "v${version}"
 	},
 	"github": {
 		"release": true,
-    "releaseName": "v${version}",
-    "releaseNotes": "git cliff --tag v${version} --unreleased --strip all -c ./cliff.toml -r .",
+		"releaseName": "v${version}",
+		"releaseNotes": "git cliff --tag v${version} --unreleased --strip all -c ./cliff.toml -r .",
 		"assets": ["nedcloarbr-nestjs-toolkit-*.tgz"]
 	},
-  "npm": {
+	"npm": {
 		"publish": true
 	},
 	"hooks": {
 		"before:bump": "yarn build",
-    "after:bump": "biome format --write package.json && git add package.json && git cliff v${latestVersion}..HEAD --prepend ./CHANGELOG.md --tag v${version} -c ./cliff.toml -r . && git add CHANGELOG.md && rm -f nedcloarbr-nestjs-toolkit-*.tgz && npm pack"
+		"after:bump": "biome format --write package.json && git add package.json && git cliff v${latestVersion}..HEAD --prepend ./CHANGELOG.md --tag v${version} -c ./cliff.toml -r . && git add CHANGELOG.md && rm -f nedcloarbr-nestjs-toolkit-*.tgz && npm pack"
 	}
 }

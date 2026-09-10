@@ -11,7 +11,8 @@
 
 [![npm version](https://img.shields.io/npm/v/@nedcloarbr/nestjs-toolkit.svg?style=flat-square)](https://www.npmjs.com/package/@nedcloarbr/nestjs-toolkit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org/)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.19-brightgreen.svg)](https://nodejs.org/)
+[![Module](https://img.shields.io/badge/module-ESM--only-blueviolet.svg)](https://nodejs.org/api/esm.html)
 
 </div>
 
@@ -79,13 +80,23 @@ yarn add -D @nedcloarbr/nestjs-toolkit
 
 ### Requirements
 
-- Node.js >= 20
+- Node.js >= 20.19
 - npm or yarn
-- `@nestjs/common` >= 10
-- `@nestjs/core` >= 10
+- `@nestjs/common` ^11 || ^12
+- `@nestjs/core` ^11 || ^12
 - `reflect-metadata` >= 0.1
+- `rxjs` >= 7.1
 
-> `@nestjs/common`, `@nestjs/core`, and `reflect-metadata` are peer dependencies — they must be installed in your project. If you already have a NestJS application, these are already present.
+> `@nestjs/common`, `@nestjs/core`, `reflect-metadata`, and `rxjs` are peer dependencies — they must be installed in your project. If you already have a NestJS application, these are already present.
+
+### ESM only
+
+This package ships as **ESM only** (`"type": "module"`) — there is no CommonJS build.
+
+- **ESM projects** (`"type": "module"` in your `package.json`): import it directly.
+- **CommonJS projects**: use a dynamic `await import("@nedcloarbr/nestjs-toolkit")`, or `require()` it on Node.js versions that support `require(esm)` (Node.js >= 20.19 / >= 22.12).
+
+The CLI (`nestjs-toolkit`) works the same way regardless of your project's module format.
 
 ## 🚀 Usage
 

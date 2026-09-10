@@ -12,7 +12,10 @@ const IP_HEADERS = [
 	"forwarded",
 ] as const;
 
-function extractIp(headers: Record<string, string | string[] | undefined>, remoteAddress?: string): string {
+function extractIp(
+	headers: Record<string, string | string[] | undefined>,
+	remoteAddress?: string,
+): string {
 	for (const header of IP_HEADERS) {
 		const value = headers[header];
 		if (!value) continue;
@@ -27,12 +30,22 @@ function extractIp(headers: Record<string, string | string[] | undefined>, remot
 
 @Injectable()
 export class ClientIpMiddleware implements NestMiddleware {
-	public use(request: Record<string, unknown>, _response: Record<string, unknown>, next: () => void): void {
-		const headers = (request["headers"] as Record<string, string | string[] | undefined>) ?? {};
+	public use(
+		request: Record<string, unknown>,
+		_response: Record<string, unknown>,
+		next: () => void,
+	): void {
+		const headers =
+			(request["headers"] as Record<string, string | string[] | undefined>) ??
+			{};
 		const remoteAddress =
 			(request["ip"] as string | undefined) ??
-			((request["connection"] as Record<string, unknown>)?.["remoteAddress"] as string | undefined) ??
-			((request["socket"] as Record<string, unknown>)?.["remoteAddress"] as string | undefined);
+			((request["connection"] as Record<string, unknown>)?.["remoteAddress"] as
+				| string
+				| undefined) ??
+			((request["socket"] as Record<string, unknown>)?.["remoteAddress"] as
+				| string
+				| undefined);
 
 		request[CLIENT_IP_KEY] = extractIp(headers, remoteAddress);
 

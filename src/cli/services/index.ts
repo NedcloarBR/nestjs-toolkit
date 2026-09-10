@@ -1,2 +1,2 @@
-export { CommandsService } from "./commands.service";
-export { ConfigService } from "./config.service";
+export { CommandsService } from "./commands.service.js";
+export { ConfigService } from "./config.service.js";

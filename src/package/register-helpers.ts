@@ -1,6 +1,5 @@
-import * as path from "node:path";
 import chalk from "chalk";
-import { HELPER_CATEGORIES, type HelperCategory } from "../helpers";
+import { HELPER_CATEGORIES, type HelperCategory } from "../helpers/index.js";
 
 export interface RegisterHelpersOptions {
 	/**
@@ -30,8 +29,8 @@ export interface RegisterHelpersOptions {
 export async function registerHelpers(options: RegisterHelpersOptions = {}) {
 	const { include, exclude, verbose = false, override = false } = options;
 
-	const helpersDir = path.resolve(__dirname, "../helpers");
-	const ext = __filename.endsWith(".ts") ? ".ts" : ".js";
+	const helpersDir = new URL("../helpers/", import.meta.url);
+	const ext = import.meta.filename.endsWith(".ts") ? ".ts" : ".js";
 
 	let categoriesToLoad = include?.length ? include : [...HELPER_CATEGORIES];
 
@@ -51,10 +50,10 @@ export async function registerHelpers(options: RegisterHelpersOptions = {}) {
 	}
 
 	for (const category of categoriesToLoad) {
-		const helperFile = path.join(helpersDir, `${category}.helpers${ext}`);
+		const helperFile = new URL(`${category}.helpers${ext}`, helpersDir);
 
 		try {
-			const mod = await import(helperFile);
+			const mod = await import(helperFile.href);
 
 			for (const [exportName, exported] of Object.entries(mod)) {
 				if (typeof exported === "function") {

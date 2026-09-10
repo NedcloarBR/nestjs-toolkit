@@ -1,5 +1,4 @@
-export * from "./http";
-export * from "./mixins";
-export * from "./register-helpers";
-export * from "./types";
-
+export * from "./http/index.js";
+export * from "./mixins/index.js";
+export * from "./register-helpers.js";
+export * from "./types.js";

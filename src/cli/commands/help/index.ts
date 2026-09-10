@@ -1,1 +1,1 @@
-export { CategoryCommand } from "./category.command";
+export { CategoryCommand } from "./category.command.js";

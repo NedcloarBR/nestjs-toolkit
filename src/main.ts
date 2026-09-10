@@ -1,14 +1,15 @@
+#!/usr/bin/env node
 import { CommandFactory } from "nest-commander";
-import { Commander } from "nest-commander/src/constants";
-import { version } from "../package.json";
-import { CommandsService } from "./cli/services";
-import { categorizedHelp, commandHelp } from "./cli/ui";
-import { CLIModule } from "./cli.module";
+import { Commander } from "nest-commander/src/constants.js";
+import packageConfig from "../package.json" with { type: "json" };
+import { CommandsService } from "./cli/services/index.js";
+import { categorizedHelp, commandHelp } from "./cli/ui/index.js";
+import { CLIModule } from "./cli.module.js";
 
 async function bootstrap() {
 	const app = await CommandFactory.createWithoutRunning(CLIModule, {
 		cliName: "nestjs-toolkit",
-		version,
+		version: packageConfig.version,
 		helpConfiguration: {
 			formatHelp: (cmd, _helper) => {
 				const commander = app.get(Commander);

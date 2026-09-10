@@ -6,7 +6,7 @@ import {
 	type NestInterceptor,
 } from "@nestjs/common";
 import { map, type Observable } from "rxjs";
-import type { PaginatedResponse, StandardResponse } from "../types";
+import type { PaginatedResponse, StandardResponse } from "../types.js";
 
 type FormattedResponse<T> = StandardResponse<T> | PaginatedResponse<T>;
 
@@ -22,8 +22,13 @@ function isAlreadyFormatted<T>(data: unknown): data is FormattedResponse<T> {
 }
 
 @Injectable()
-export class TransformInterceptor<T> implements NestInterceptor<T, FormattedResponse<T>> {
-	public intercept(context: ExecutionContext, next: CallHandler<T>): Observable<FormattedResponse<T>> {
+export class TransformInterceptor<T>
+	implements NestInterceptor<T, FormattedResponse<T>>
+{
+	public intercept(
+		context: ExecutionContext,
+		next: CallHandler<T>,
+	): Observable<FormattedResponse<T>> {
 		const ctx = context.switchToHttp();
 		const request = ctx.getRequest();
 		const response = ctx.getResponse();

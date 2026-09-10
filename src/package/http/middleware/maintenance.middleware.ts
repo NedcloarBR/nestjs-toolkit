@@ -1,4 +1,7 @@
-import { type NestMiddleware, ServiceUnavailableException } from "@nestjs/common";
+import {
+	type NestMiddleware,
+	ServiceUnavailableException,
+} from "@nestjs/common";
 
 export interface MaintenanceMiddlewareOptions {
 	enabled: boolean | (() => boolean);
@@ -15,9 +18,15 @@ export class MaintenanceMiddleware implements NestMiddleware {
 		};
 	}
 
-	public use(_request: Record<string, unknown>, _response: Record<string, unknown>, next: () => void): void {
+	public use(
+		_request: Record<string, unknown>,
+		_response: Record<string, unknown>,
+		next: () => void,
+	): void {
 		const isEnabled =
-			typeof this.options.enabled === "function" ? this.options.enabled() : this.options.enabled;
+			typeof this.options.enabled === "function"
+				? this.options.enabled()
+				: this.options.enabled;
 
 		if (isEnabled) {
 			throw new ServiceUnavailableException(this.options.message);

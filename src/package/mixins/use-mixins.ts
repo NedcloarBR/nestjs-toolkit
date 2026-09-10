@@ -1,7 +1,7 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: mixin pattern requires any to compose arbitrary constructors
 
-import type { AbstractConstructor, ExtractAdded } from "../types";
-import { MIXIN_FACTORY } from "./create-mixin";
+import type { AbstractConstructor, ExtractAdded } from "../types.js";
+import { MIXIN_FACTORY } from "./create-mixin.js";
 
 abstract class BaseEmptyClass {}
 

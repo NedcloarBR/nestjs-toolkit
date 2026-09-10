@@ -1,1 +1,1 @@
-export { InitCommand } from "./init.command";
+export { InitCommand } from "./init.command.js";

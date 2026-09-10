@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import type { ConfigService } from "../services";
+import type { ConfigService } from "../services/index.js";
 
 export interface AddToEnvOptions {
 	/** Key length in bytes (hex output is twice this). Defaults to 32. */

@@ -1,8 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { Injectable } from "@nestjs/common";
-import { ConfigNotExistsError } from "../errors";
-import type { ConfigFile } from "../types/config";
+import { ConfigNotExistsError } from "../errors/index.js";
+import type { ConfigFile } from "../types/config.js";
 
 @Injectable()
 export class ConfigService {

@@ -2,12 +2,12 @@ import { Injectable, type OnModuleInit } from "@nestjs/common";
 // biome-ignore lint/style/useImportType: Module Injection
 import { ModuleRef, Reflector } from "@nestjs/core";
 import { CommandRunner } from "nest-commander";
-import { CommandMeta } from "nest-commander/src/constants";
+import { CommandMeta } from "nest-commander/src/constants.js";
 import {
 	CommandExtraKey,
 	type CommandExtraOptions,
-} from "../common/decorators/command-extras.decorator";
-import type { CommandType } from "../types/commands";
+} from "../common/decorators/command-extras.decorator.js";
+import type { CommandType } from "../types/commands.js";
 
 @Injectable()
 export class CommandsService implements OnModuleInit {

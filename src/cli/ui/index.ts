@@ -1,3 +1,3 @@
-export * from "./banner";
-export * from "./categorized-help";
-export * from "./command-help";
+export * from "./banner.js";
+export * from "./categorized-help.js";
+export * from "./command-help.js";
