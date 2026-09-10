@@ -62,4 +62,6 @@ interface NestPaginateResult<T> {
 	links?: PaginationLinks & { current?: string };
 }
 
-export type PaginationResult<T> = TypeOrmPaginateResult<T> | NestPaginateResult<T>;
+export type PaginationResult<T> =
+	| TypeOrmPaginateResult<T>
+	| NestPaginateResult<T>;

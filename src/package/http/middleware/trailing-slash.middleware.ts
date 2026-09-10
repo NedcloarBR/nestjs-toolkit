@@ -19,7 +19,11 @@ export class TrailingSlashMiddleware implements NestMiddleware {
 		this.statusCode = options.statusCode ?? HttpStatus.MOVED_PERMANENTLY;
 	}
 
-	public use(request: Record<string, unknown>, response: Record<string, unknown>, next: () => void): void {
+	public use(
+		request: Record<string, unknown>,
+		response: Record<string, unknown>,
+		next: () => void,
+	): void {
 		const url = request["url"] as string;
 
 		if (!url || url === "/" || !url.endsWith("/")) {
@@ -35,9 +39,14 @@ export class TrailingSlashMiddleware implements NestMiddleware {
 
 		if (this.redirect) {
 			if (typeof response["redirect"] === "function") {
-				(response["redirect"] as (statusCode: number, url: string) => void)(this.statusCode, clean);
+				(response["redirect"] as (statusCode: number, url: string) => void)(
+					this.statusCode,
+					clean,
+				);
 			} else if (typeof response["status"] === "function") {
-				const res = (response["status"] as (code: number) => Record<string, unknown>)(this.statusCode);
+				const res = (
+					response["status"] as (code: number) => Record<string, unknown>
+				)(this.statusCode);
 				if (typeof res["redirect"] === "function") {
 					(res["redirect"] as (url: string) => void)(clean);
 				}
