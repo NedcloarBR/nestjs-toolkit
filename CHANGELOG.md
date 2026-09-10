@@ -1,6 +1,33 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# [2.0.0](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.3.4...v2.0.0) - (2026-09-10)
+
+## Bug Fixes
+
+- **cli:** Add node shebang to the bin entrypoint ([7e9eba0](https://github.com/NedcloarBR/nestjs-toolkit/commit/7e9eba06991956b5f7071e4c777e4f52ef01e4a7))
+- **cli:** Import nest-commander constants with file extension ([1dd2285](https://github.com/NedcloarBR/nestjs-toolkit/commit/1dd22852e7d60220c444f0157d9c2d62cd3d4b74))
+
+## Documentation
+
+- **readme:** Document ESM-only install and peer requirements ([2ab5d0f](https://github.com/NedcloarBR/nestjs-toolkit/commit/2ab5d0f55734b6f8bd51ff2c477e882590c76d7a))
+
+## Features
+
+- **pkg:** Publish the package as ESM only ([a98e186](https://github.com/NedcloarBR/nestjs-toolkit/commit/a98e18649b924b8b34edb8c0a4c89fe593b4ca58))
+  - **BREAKING CHANGE:** the package now ships as ESM only ("type": "module")
+with no CommonJS build, and an "exports" map that blocks deep imports.
+
+## Refactor
+
+- **cli:** Load version through a json import attribute ([15c3cc6](https://github.com/NedcloarBR/nestjs-toolkit/commit/15c3cc646d2bbc778b512b3bf10fabab013b3747))
+- **esm:** Replace __dirname and __filename with import.meta ([df797e4](https://github.com/NedcloarBR/nestjs-toolkit/commit/df797e47438cab4d524926f1ca023c2fb30b1a61))
+- **esm:** Add explicit .js extensions to relative imports ([e483a89](https://github.com/NedcloarBR/nestjs-toolkit/commit/e483a893ba5ce9c0801fcfba0f8a5b8568b5354b))
+
+## Styling
+
+- Apply biome formatting to untouched files ([44bbefb](https://github.com/NedcloarBR/nestjs-toolkit/commit/44bbefbd6e8e903304c326b8c45860d5f6e16925))
+
 # [1.3.4](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.3.3...v1.3.4) - (2026-06-26)
 
 ## Features
