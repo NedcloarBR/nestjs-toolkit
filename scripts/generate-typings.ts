@@ -2,12 +2,15 @@ import fs from "node:fs";
 import path from "node:path";
 import { Project } from "ts-morph";
 
-const helpersDir = path.resolve(__dirname, "../src/helpers");
+const helpersDir = path.resolve(import.meta.dirname, "../src/helpers");
 const outputTypesFile = path.resolve(
-	__dirname,
+	import.meta.dirname,
 	"../src/helpers/helpers.types.ts",
 );
-const outputGlobalFile = path.resolve(__dirname, "../typings/global.d.ts");
+const outputGlobalFile = path.resolve(
+	import.meta.dirname,
+	"../typings/global.d.ts",
+);
 
 async function main() {
 	const files = (await fs.promises.readdir(helpersDir)).filter((f) =>
@@ -47,7 +50,7 @@ export const HELPER_CATEGORIES = Object.values(HelperCategory);
 declare global {\n`;
 
 	const project = new Project({
-		tsConfigFilePath: path.resolve(__dirname, "../tsconfig.json"),
+		tsConfigFilePath: path.resolve(import.meta.dirname, "../tsconfig.json"),
 	});
 
 	for (const file of files) {
