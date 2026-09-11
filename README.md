@@ -136,15 +136,15 @@ nestjs-toolkit <command> --help
 
 | Command | Description | Options | Usage |
 |---------|-------------|---------|-------|
-| `config:init` | Initialize the CLI configuration file for your project | `-f, --force` - Force initialization without confirmation | `nestjs-toolkit config:init [--force]` |
+| `init` | Initialize the CLI configuration file for your project | `-f, --force` - Force initialization without confirmation | `nestjs-toolkit init [--force]` |
 
 **Example:**
 ```bash
 # Interactive initialization
-nestjs-toolkit config:init
+nestjs-toolkit init
 
 # Force initialization without confirmation
-nestjs-toolkit config:init --force
+nestjs-toolkit init --force
 ```
 
 ### Key Generation Commands
