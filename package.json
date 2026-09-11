@@ -1,6 +1,6 @@
 {
 	"name": "@nedcloarbr/nestjs-toolkit",
-	"version": "2.0.0",
+	"version": "2.1.0",
 	"description": "A collection of tools and utilities for NestJS applications.",
 	"author": "NedcloarBR",
 	"license": "MIT",
@@ -94,7 +94,7 @@
 		"ts-morph": "^28.0.0",
 		"typescript": "^6.0.3"
 	},
-  "peerDependencies": {
+	"peerDependencies": {
 		"@nestjs/common": "^11.0.0 || ^12.0.0",
 		"@nestjs/config": "^4.0.0 || ^12.0.0",
 		"@nestjs/core": "^11.0.0 || ^12.0.0",

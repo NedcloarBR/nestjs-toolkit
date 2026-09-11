@@ -1,6 +1,26 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# [2.1.0](https://github.com/NedcloarBR/nestjs-toolkit/compare/v2.0.0...v2.1.0) - (2026-09-11)
+
+## Documentation
+
+- **readme:** Document make:config and nestjs-toolkit.json ([5e3dfd9](https://github.com/NedcloarBR/nestjs-toolkit/commit/5e3dfd964ab5797aed020bb6752c8812d2f9daa8))
+- **readme:** Fix the init command name ([c23940b](https://github.com/NedcloarBR/nestjs-toolkit/commit/c23940b03a6060c9acc059ae10656cf164397abd))
+- **readme:** Document application configuration ([22ed85d](https://github.com/NedcloarBR/nestjs-toolkit/commit/22ed85d22810670e1094b28b9e0613ad3c0a9374))
+
+## Features
+
+- **cli:** Add make:config command ([ce83a4a](https://github.com/NedcloarBR/nestjs-toolkit/commit/ce83a4a149d838e6b6b6344baa573378d798c318))
+- **cli:** Store config dir and schema in the cli config ([aed6e74](https://github.com/NedcloarBR/nestjs-toolkit/commit/aed6e74e714ac28b715803ba46a70d049b51b773))
+- **config:** Export the config subsystem ([997f5f2](https://github.com/NedcloarBR/nestjs-toolkit/commit/997f5f2ed6905bfd871b250f9a15ed7dac3865b4))
+- **config:** Add defineEnv with typed namespaces ([63466e4](https://github.com/NedcloarBR/nestjs-toolkit/commit/63466e492edcf416c5761cb5b917daef7a209621))
+- **config:** Validate env schemas with strict coercion ([63412a0](https://github.com/NedcloarBR/nestjs-toolkit/commit/63412a0ea8e29f34da0377fa60d7927fd5a1bb42))
+- **config:** Load config files from a directory ([56332d8](https://github.com/NedcloarBR/nestjs-toolkit/commit/56332d83f408bbede0565aa962d0d0464bf72842))
+- **config:** Derive config namespaces from file names ([93d2777](https://github.com/NedcloarBR/nestjs-toolkit/commit/93d2777254e166f4999ebe3958e5b65a5ce84480))
+- **config:** Load optional peers on demand ([2872bd9](https://github.com/NedcloarBR/nestjs-toolkit/commit/2872bd967734bb26f69bc6cc74d0a3cf6a647036))
+- **config:** Add shared config and standard schema types ([64d5da3](https://github.com/NedcloarBR/nestjs-toolkit/commit/64d5da3a82dd68c681fb6ffa8fd653188799602f))
+
 # [2.0.0](https://github.com/NedcloarBR/nestjs-toolkit/compare/v1.3.4...v2.0.0) - (2026-09-10)
 
 ## Bug Fixes
