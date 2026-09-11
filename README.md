@@ -137,6 +137,7 @@ nestjs-toolkit <command> --help
 | Command | Description | Options | Usage |
 |---------|-------------|---------|-------|
 | `init` | Initialize the CLI configuration file for your project | `-f, --force` - Force initialization without confirmation | `nestjs-toolkit init [--force]` |
+| `make:config` | Create a config file in the standard format, with its env schema next to it | `-s, --schema <kind>` - `class-validator`, `zod`, `valibot`, `arktype` or `none`<br>`-m, --module <format>` - `esm` or `cjs` (read from the nearest `package.json` when omitted)<br>`-d, --dir <path>` - Target directory<br>`-f, --force` - Overwrite an existing file<br>`--skip-register` - Do not add it to `defineEnv({ namespaces })` | `nestjs-toolkit make:config <name> [--schema <kind>]` |
 
 **Example:**
 ```bash
@@ -145,7 +146,31 @@ nestjs-toolkit init
 
 # Force initialization without confirmation
 nestjs-toolkit init --force
+
+# Create src/config/mailer.config.ts and register it in defineEnv({ namespaces })
+nestjs-toolkit make:config mailer
+
+# Same, with a zod schema instead of the saved default
+nestjs-toolkit make:config mailer --schema zod
 ```
+
+#### `nestjs-toolkit.json`
+
+`init` writes it at the project root. `make:config` reads its `config` block, so it never has to ask:
+
+```json
+{
+  "envFilePath": ".env",
+  "config": {
+    "dir": "src/config",
+    "schema": "class-validator"
+  }
+}
+```
+
+Without the file, or without the `config` block, `make:config` falls back to `src/config` and `class-validator`. A flag always wins over the file.
+
+The module format is not a setting: `make:config` reads it from the nearest `package.json`, the way Node does. `"type": "module"` generates `defineConfig(import.meta, …)`; no `type`, or `"commonjs"`, generates `defineConfig(__filename, …)`, since `import.meta` does not compile to CommonJS. The import it adds to `defineEnv` follows the extension style the file already uses — `.js` or none. The output says which format it picked and why; `--module` overrides it.
 
 ### Key Generation Commands
 
@@ -764,6 +789,8 @@ export default defineConfig(import.meta, MailerEnv, (env) => ({
   port: env.MAILER_PORT,
 }));
 ```
+
+> `nestjs-toolkit make:config mailer` scaffolds this file — with a class-validator, zod, valibot or arktype schema — and adds it to `defineEnv({ namespaces })`. See [Configuration Commands](#configuration-commands). When nothing in the project calls `defineEnv`, it warns instead: a co-located schema is only validated there, and without it the app stops with `EnvNotInitializedError`.
 
 Either kind of schema works in either place — a co-located schema can be a Standard Schema too:
 
