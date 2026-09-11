@@ -31,3 +31,15 @@ export interface InitAnswers {
 	configDir: string;
 	configSchema: ConfigSchemaKind;
 }
+
+export function isConfigSchemaKind(value: unknown): value is ConfigSchemaKind {
+	return CONFIG_SCHEMA_KINDS.includes(value as ConfigSchemaKind);
+}
+
+export type ModuleKind = "esm" | "cjs";
+
+export const MODULE_KINDS: readonly ModuleKind[] = ["esm", "cjs"];
+
+export function isModuleKind(value: unknown): value is ModuleKind {
+	return MODULE_KINDS.includes(value as ModuleKind);
+}
