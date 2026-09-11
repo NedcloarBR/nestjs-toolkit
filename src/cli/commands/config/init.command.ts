@@ -8,7 +8,7 @@ import {
 import { CommandExtra } from "../../common/decorators/command-extras.decorator.js";
 import { ConfigService } from "../../services/index.js";
 import { CommandCategories } from "../../types/categories.js";
-import { ConfigFile } from "../../types/config.js";
+import { InitAnswers } from "../../types/config.js";
 
 interface Options {
 	force: boolean;
@@ -44,12 +44,15 @@ export class InitCommand extends CommandRunner {
 			}
 		}
 
-		const configQuestions = await this.inquirerService.ask<ConfigFile>(
+		const answers = await this.inquirerService.ask<InitAnswers>(
 			"init",
 			undefined,
 		);
 
-		this.configService.createConfigFile(configQuestions);
+		this.configService.createConfigFile({
+			envFilePath: answers.envFilePath,
+			config: { dir: answers.configDir, schema: answers.configSchema },
+		});
 
 		process.exit(0);
 	}

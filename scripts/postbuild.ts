@@ -32,6 +32,16 @@ async function main() {
 		console.error("❌ Failed to copy package.json to dist/:", err);
 		process.exit(1);
 	}
+
+	// npm sets the bit when it installs the package, but a linked checkout
+	// (file:, yarn link) runs the bin straight from this build.
+	try {
+		await fs.chmod(path.resolve("dist/src/main.js"), 0o755);
+		console.log("✅ Made dist/src/main.js executable");
+	} catch (err) {
+		console.error("❌ Failed to make dist/src/main.js executable:", err);
+		process.exit(1);
+	}
 }
 
 main();
