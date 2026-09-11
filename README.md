@@ -33,6 +33,8 @@
   •
   <a href="#🌐-http-utilities">HTTP Utilities</a>
   •
+  <a href="#🗂️-application-configuration">Application Configuration</a>
+  •
   <a href="#🔠-utility-types">Utility Types</a>
   •
   <a href="#📖-license">License</a>
@@ -58,6 +60,7 @@ If you liked the project, feel free to leave a ⭐ here on Github for it to grow
 - 🔧 **Global Helpers** - Utility functions for async operations, dates, security, and strings that can be registered globally
 - 🧩 **Mixin Utilities** - Type-safe mixin composition with `CreateMixin`, `UseMixins`, `ComposeMixins`, and more
 - 🌐 **HTTP Utilities** - Adapter-agnostic base controller, filters, interceptors, middlewares, and param decorators
+- 🗂️ **Application Configuration** - File-name-derived config namespaces, directory auto-loading, and environment validation with class-validator or any Standard Schema
 - 🔠 **Utility Types** - Common TypeScript utility types (`Awaitable`, `Maybe`, `DeepPartial`, `Prettify`, and more)
 
 ## 📦 Installation
@@ -88,6 +91,14 @@ yarn add -D @nedcloarbr/nestjs-toolkit
 - `rxjs` >= 7.1
 
 > `@nestjs/common`, `@nestjs/core`, `reflect-metadata`, and `rxjs` are peer dependencies — they must be installed in your project. If you already have a NestJS application, these are already present.
+
+Optional peer dependencies, needed only by [Application Configuration](#🗂️-application-configuration):
+
+- `@nestjs/config` ^4 || ^12
+- `class-validator` ^0.14 || ^0.15 and `class-transformer` ^0.5 — for class-based env schemas
+- or any [Standard Schema](https://standardschema.dev) library (zod, valibot, arktype, …) instead
+
+> These are resolved lazily, so importing the package without them installed works fine.
 
 ### ESM only
 
@@ -610,6 +621,308 @@ getProfile(
 | `ErrorResponse` | Shape of error responses from the filters |
 | `PaginationLinks` | Links shape (`first`, `previous`, `current`, `next`, `last`) |
 | `PaginationResult<T>` | Union of `nestjs-typeorm-paginate` and `nestjs-paginate` result shapes |
+
+## 🗂️ Application Configuration
+
+A configuration subsystem for the applications that consume this package: **creating a config means creating a file** — no array to edit, no barrel to update, no `AppModule` to touch.
+
+These helpers rely on optional peer dependencies. Install only what you use:
+
+```bash
+npm install @nestjs/config
+# class-validator schemas
+npm install class-validator class-transformer
+# or any Standard Schema library instead (zod, valibot, arktype, ...)
+npm install zod
+```
+
+> They are declared as **optional** peer dependencies and are resolved lazily, so importing `@nedcloarbr/nestjs-toolkit` never loads them. You only need them if you call the config helpers.
+
+### `defineConfig`
+
+Wraps `registerAs` from `@nestjs/config`, deriving the namespace from the **file name**: `cdn.config.ts` becomes the `cdn` namespace, so the name is never repeated as a string.
+
+```typescript
+// src/config/cdn.config.ts  (ESM)
+import { defineConfig } from '@nedcloarbr/nestjs-toolkit';
+
+export default defineConfig(import.meta, () => ({
+  ttlMs: 60_000,
+  baseUrl: process.env.CDN_URL,
+}));
+```
+
+```typescript
+// src/config/cdn.config.ts  (CommonJS)
+import { defineConfig } from '@nedcloarbr/nestjs-toolkit';
+
+export default defineConfig(__filename, () => ({
+  ttlMs: 60_000,
+  baseUrl: process.env.CDN_URL,
+}));
+```
+
+A file that is not named `<namespace>.config.<ext>` throws a `ConfigSourceError` at boot — a silently wrong namespace is worse than a loud failure.
+
+#### Typing the injected config
+
+The return type is the one `registerAs` produces, so **the config file exports no type at all** — the consumer derives it from the default export it already imports for `.KEY`:
+
+```typescript
+import { InferConfig } from '@nedcloarbr/nestjs-toolkit';
+import cdnConfig from './config/cdn.config.js';
+
+@Injectable()
+export class CdnService {
+  constructor(
+    @Inject(cdnConfig.KEY)
+    private readonly config: InferConfig<typeof cdnConfig>,
+  ) {}
+}
+```
+
+`InferConfig` mirrors `ConfigType` from `@nestjs/config` (awaiting async factories too), so the consuming file does not need to import it.
+
+If you would rather name the type once and share it, give the factory a const and export it alongside — TypeScript cannot take `typeof` of an anonymous default export:
+
+```typescript
+const mailerConfig = defineConfig(import.meta, () => ({ from: 'noreply@example.com' }));
+
+export default mailerConfig;
+export type MailerConfig = InferConfig<typeof mailerConfig>;
+```
+
+### `loadConfigs` / `loadConfigsSync`
+
+Scan a directory, pick up every `*.config.js` file, sort them by name for a deterministic order, and hand the factories to `ConfigModule`.
+
+```typescript
+import { join } from 'node:path';
+import { ConfigModule } from '@nestjs/config';
+import { loadConfigs } from '@nedcloarbr/nestjs-toolkit';
+import { validate } from './env/index.js';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      cache: true,
+      load: loadConfigs(join(import.meta.dirname, 'config')),
+      validate,
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+`loadConfigs` returns `Array<Promise<ConfigFactory>>` and lets `ConfigModule` await them, so the package never needs a top-level `await`. `loadConfigsSync` resolves the same factories through `require` for setups that want `imports` fully synchronous.
+
+> The directory is the **built** one (`dist/config`), not the TypeScript sources — the runtime sees `.js`, never `.ts`. A sibling `index.js` or `define.js` is ignored: only `*.config.js` is picked up.
+
+### `defineEnv`
+
+Validates the environment and returns the `validate` that `ConfigModule.forRoot` expects. It accepts a **class-validator** class or any **Standard Schema** (zod, valibot, arktype, …).
+
+```typescript
+// src/env/index.ts
+import { defineEnv, loadConfigsSync } from '@nedcloarbr/nestjs-toolkit';
+import { AppEnv, DatabaseEnv } from './schemas.js';
+
+// Loaded synchronously so the co-located schemas exist before validate runs.
+export const load = loadConfigsSync(join(import.meta.dirname, '../config'));
+
+export const validate = defineEnv({
+  schemas: [AppEnv, DatabaseEnv],
+  configs: load,
+});
+```
+
+For a single schema and no config discovery, pass it directly: `defineEnv(AppEnv)`.
+
+`schemas` holds what is not tied to a single config file — the application's own variables, or ones several configs share. `configs` contributes the schemas co-located through `defineConfig`.
+
+#### Schemas next to the config that uses them
+
+**Each config file declares the variables it consumes**, and its factory receives them already validated and typed. Adding a config that needs a new variable stays a one-file change:
+
+```typescript
+// src/config/mailer.config.ts — the only file you add
+import { IsInt, IsPositive, IsString } from 'class-validator';
+import { defineConfig } from '@nedcloarbr/nestjs-toolkit';
+
+class MailerEnv {
+  @IsString()
+  readonly MAILER_HOST: string = 'smtp.example.com';
+
+  @IsInt()
+  @IsPositive()
+  readonly MAILER_PORT: number = 587;
+}
+
+export default defineConfig(import.meta, MailerEnv, (env) => ({
+  host: env.MAILER_HOST,   // typed as MailerEnv
+  port: env.MAILER_PORT,
+}));
+```
+
+Either kind of schema works in either place — a co-located schema can be a Standard Schema too:
+
+```typescript
+const StorageEnv = z.object({
+  STORAGE_BUCKET: z.string().min(3).default('local-bucket'),
+});
+
+export default defineConfig(import.meta, StorageEnv, (env) => ({
+  bucket: env.STORAGE_BUCKET,
+}));
+```
+
+The default lives next to the constraint, so a missing variable falls back instead of failing. Every schema is validated against the same environment and the failures are reported together — across both kinds — each scoped to its namespace:
+
+```
+EnvValidationError: Environment validation failed:
+  - NODE_ENV: NODE_ENV must be one of the following values: development, production, test
+  - [app] PORT: PORT must be a positive number
+  - [mailer] MAILER_PORT: MAILER_PORT must be a positive number
+  - [storage] STORAGE_BUCKET: Too small: expected string to have >=3 characters
+```
+
+> **Use `loadConfigsSync`.** `ConfigModule.forRoot` calls `validate` *before* it awaits `load`, so with the async `loadConfigs` the schemas are not loaded yet when validation runs. If you need the async loader, await it yourself first: `const load = await Promise.all(loadConfigs(dir))`.
+
+Only the keys a schema declares are taken from it when the results are merged, so one config's untouched copy of a variable can never overwrite another's coerced value.
+
+#### Reading the values
+
+Values are read through Nest's own DI, which is typed end to end and mockable in tests:
+
+```typescript
+// A config namespace, fully typed
+@Inject(appConfig.KEY)
+private readonly config: InferConfig<typeof appConfig>;
+```
+
+```typescript
+// Any validated variable, through ConfigService
+configService.get('DB_PORT');   // 5432 (number) — the coerced value
+```
+
+If you need the validated environment outside the container — a TypeORM CLI datasource, a script — call the validator yourself and hold the result. It is typed, explicit, and carries no initialization order:
+
+```typescript
+const env = validate({ ...process.env });   // typed as AppEnv & DatabaseEnv
+```
+
+> **Never import that module from a config file.** The module that calls `defineEnv` is the module that loads the configs, so importing it back creates a cycle `require` cannot resolve. The loader detects it and throws `ConfigCycleError` naming the offending file.
+
+#### Autocomplete on `ConfigService`
+
+Hand `defineEnv` the same configs imported and keyed by namespace, and `InferAppConfig` types every `ConfigService` path straight from the validator — no generated file, no command:
+
+```typescript
+// src/env/index.ts
+import app from '../config/app.config.js';
+import cdn from '../config/cdn.config.js';
+import mailer from '../config/mailer.config.js';
+
+export const load = loadConfigsSync(join(import.meta.dirname, '../config'));
+
+export const validate = defineEnv({
+  schemas: [AppEnv, DatabaseEnv],
+  configs: load,                    // runtime: whatever the folder holds
+  namespaces: { app, cdn, mailer }, // types: checked against the folder
+});
+```
+
+```typescript
+import { ConfigService } from '@nestjs/config';
+import type { InferAppConfig } from '@nedcloarbr/nestjs-toolkit';
+import type { validate } from './env/index.js';
+
+type AppConfig = InferAppConfig<typeof validate>;
+
+@Injectable()
+export class SomeService {
+  constructor(private readonly config: ConfigService<AppConfig, true>) {}
+
+  method() {
+    this.config.get('DB_PORT', { infer: true });      // number — defineEnv schemas
+    this.config.get('MAILER_PORT', { infer: true });  // number — co-located in mailer.config.ts
+    this.config.get('cdn.ttlMs', { infer: true });    // number — namespace
+
+    this.config.get('DB_PORTT', { infer: true });     // ✗ compile error
+    this.config.get('cdn.nope', { infer: true });     // ✗ compile error
+  }
+}
+```
+
+`WasValidated = true` drops the `| undefined` from every result, which is correct here: `defineEnv` blocks the boot if anything is missing.
+
+**Why the imports.** TypeScript only knows the type of a file that some code imports by a literal path. `loadConfigsSync` finds the files at runtime, after compilation, so its result is typed as a plain array — no helper can recover `cdn` or `ttlMs` from it. The `namespaces` map is that literal import and nothing more: the folder stays the runtime source of truth.
+
+**It cannot drift.** When `configs` and `namespaces` are both given, `defineEnv` checks them against each other as soon as it is called:
+
+```
+ConfigNamespacesError: defineEnv({ namespaces }) does not match the loaded configs:
+  - "storage" is loaded from the config folder but missing from namespaces, so its keys are not typed
+  - the "cdn" entry points at the "assets" config — the key must match its file name
+```
+
+A new config is one file plus one import: forget the import and the app does not start; rename a file and the stale key is named.
+
+> String-path typing is opt-in. Without `namespaces`, `defineEnv({ schemas, configs: load })` works as before, and injecting a config — `@Inject(cdnConfig.KEY) config: InferConfig<typeof cdnConfig>` — is fully typed either way.
+
+#### Coercion
+
+By default the raw environment strings are coerced to the declared property types — strictly, not the way `class-transformer` does it on its own. Its implicit conversion calls `Boolean(value)`, so `"false"` becomes `true` and any garbage passes as a boolean; and `Number("")` is `0`, so an empty variable passes as zero. `defineEnv` re-reads those cases:
+
+| Declared type | Accepted | Rejected |
+|---|---|---|
+| `boolean` | `true`/`false`, `1`/`0`, `yes`/`no`, `on`/`off` — case-insensitive | anything else, including an empty string |
+| `number` | anything `Number()` parses | an empty string, and anything `Number()` cannot parse |
+
+```
+DEBUG=false  -> false
+DEBUG=maybe  -> EnvValidationError: DEBUG must be a boolean value
+DB_PORT=     -> EnvValidationError: DB_PORT must be an integer number
+```
+
+To validate the raw strings instead — `@IsPort()`, `@IsBooleanString()`, `@IsNumberString()` — and convert explicitly inside the config factory, turn it off with `enableImplicitConversion: false`. Standard Schema validators ignore this option; they handle coercion themselves (`z.coerce.number()`, `z.stringbool()`).
+
+#### The validated env inside `ConfigModule`
+
+Whatever `validate` returns *becomes* the module's validated environment, so the coerced values are reachable from `ConfigService` too — `get` looks them up **before** falling back to `process.env`:
+
+| | `configService.get('DB_PORT')` | `process.env.DB_PORT` |
+|---|---|---|
+| unset | `5432` (number) | `'5432'` (string) |
+| `DB_PORT=6543` | `6543` (number) | `'6543'` (string) |
+
+- **`ConfigService` sees the coerced value, not the raw string.** The lookup order is namespaced config (from `load`) → validated env → `process.env`.
+- **`process.env` is written back**, but only for `string | boolean | number` keys that were not already set, and always stringified. A variable a schema defaults is therefore visible to code reading `process.env` directly.
+- The validated object carries the whole environment, declared or not — **never log it as a whole**.
+
+### API Reference
+
+| Export | Description |
+|--------|-------------|
+| `defineConfig(source, factory)` | `registerAs` with the namespace derived from the file name. `source` is `import.meta` (ESM) or `__filename` (CommonJS) |
+| `defineConfig(source, schema, factory)` | As above, with an env schema (class or Standard Schema) co-located in the config file; `factory` receives it typed |
+| `loadConfigs(dir)` | `Array<Promise<RegisteredConfigFactory>>` for every `*.config.js` in `dir`, loaded with dynamic `import()` |
+| `loadConfigsSync(dir)` | The same factories resolved synchronously through `require` |
+| `defineEnv(schema \| options)` | The `validate` for `ConfigModule.forRoot`. `options.schemas` plus the schemas co-located in `options.configs`; `options.namespaces` types string paths for `InferAppConfig` |
+| `InferConfig<typeof cfg>` | The object a config factory produces, awaited when async — same as `ConfigType` |
+| `InferAppConfig<typeof validate>` | Everything `ConfigService<…, true>` can read: the validated env, co-located schemas, and every namespace in `namespaces` |
+| `EnvValidator<T>` | The validator signature: raw environment in, validated environment out |
+| `RegisteredConfigFactory` | A config factory carrying `KEY` and `asProvider()` |
+| `ConfigSourceError` | The file is not named `<namespace>.config.<ext>` |
+| `ConfigDirectoryError` | The config directory could not be read |
+| `ConfigCycleError` | A config file imports the module that loads it |
+| `ConfigNamespacesError` | `defineEnv({ namespaces })` does not match the loaded configs |
+| `ConfigFactoryError` | A `*.config.js` file has no default-exported factory |
+| `EnvValidationError` | Validation failed — `constraints` holds every message |
+| `EnvNotInitializedError` | A config factory ran before its co-located schema was validated |
+| `AsyncEnvSchemaError` | The Standard Schema validated asynchronously, which `ConfigModule` cannot await |
+| `MissingOptionalPeerError` | An optional peer dependency is not installed |
 
 ## 🔠 Utility Types
 
