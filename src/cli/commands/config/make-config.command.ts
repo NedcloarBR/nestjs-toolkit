@@ -172,13 +172,13 @@ export class MakeConfigCommand extends CommandRunner {
 				return;
 			case "no-env":
 				console.log(
-					schema === "none"
-						? chalk.dim(
-								`No defineEnv under ${relative(registration.root)} — load the folder with loadConfigsSync, or add the config to ConfigModule.forRoot({ load }).`,
-							)
-						: chalk.yellow(
-								`No defineEnv under ${relative(registration.root)}: the env schema is only validated there, so the app stops with EnvNotInitializedError until defineEnv({ configs }) is wired in. For a config without env variables, recreate it with --schema none --force.`,
-							),
+					chalk.dim(
+						`No defineEnv under ${relative(registration.root)} — load the folder with loadConfigsSync, or add the config to ConfigModule.forRoot({ load }).${
+							schema === "none"
+								? ""
+								: " Its env schema is validated when the config loads; wire defineEnv({ configs }) to report every failure together at boot."
+						}`,
+					),
 				);
 				return;
 			case "skipped":

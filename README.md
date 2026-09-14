@@ -790,7 +790,7 @@ export default defineConfig(import.meta, MailerEnv, (env) => ({
 }));
 ```
 
-> `nestjs-toolkit make:config mailer` scaffolds this file — with a class-validator, zod, valibot or arktype schema — and adds it to `defineEnv({ namespaces })`. See [Configuration Commands](#configuration-commands). When nothing in the project calls `defineEnv`, it warns instead: a co-located schema is only validated there, and without it the app stops with `EnvNotInitializedError`.
+> `nestjs-toolkit make:config mailer` scaffolds this file — with a class-validator, zod, valibot or arktype schema — and adds it to `defineEnv({ namespaces })`. See [Configuration Commands](#configuration-commands). When nothing in the project calls `defineEnv`, it says so instead: the config still validates its own schema when it loads, but its failures are no longer reported together with the rest at boot.
 
 Either kind of schema works in either place — a co-located schema can be a Standard Schema too:
 
@@ -838,6 +838,16 @@ If you need the validated environment outside the container — a TypeORM CLI da
 ```typescript
 const env = validate({ ...process.env });   // typed as AppEnv & DatabaseEnv
 ```
+
+A single namespace needs no validator: call its factory, as you would one from `registerAs`. Where no `defineEnv` has run, a co-located schema is validated against `process.env` first, with the default options, and throws `EnvValidationError` if it fails. Once a `defineEnv` has run in the process, a config it did not validate throws `EnvNotInitializedError` instead — it was left out of `configs`:
+
+```typescript
+import mailerConfig from './config/mailer.config.js';
+
+const mailer = mailerConfig();   // { host: string; port: number }
+```
+
+The return type follows the factory: a sync factory returns the object, an `async` one a `Promise` of it.
 
 > **Never import that module from a config file.** The module that calls `defineEnv` is the module that loads the configs, so importing it back creates a cycle `require` cannot resolve. The loader detects it and throws `ConfigCycleError` naming the offending file.
 
@@ -947,7 +957,7 @@ Whatever `validate` returns *becomes* the module's validated environment, so the
 | `ConfigNamespacesError` | `defineEnv({ namespaces })` does not match the loaded configs |
 | `ConfigFactoryError` | A `*.config.js` file has no default-exported factory |
 | `EnvValidationError` | Validation failed — `constraints` holds every message |
-| `EnvNotInitializedError` | A config factory ran before its co-located schema was validated |
+| `EnvNotInitializedError` | A `defineEnv` ran without validating a config's co-located schema — the config is missing from `configs`, or `load` is async |
 | `AsyncEnvSchemaError` | The Standard Schema validated asynchronously, which `ConfigModule` cannot await |
 | `MissingOptionalPeerError` | An optional peer dependency is not installed |
 
