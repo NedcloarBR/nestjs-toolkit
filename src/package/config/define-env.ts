@@ -1,5 +1,6 @@
 import type { ConfigFactory } from "@nestjs/config";
 import type { UnionToIntersection } from "../types.js";
+import { markDefineEnvRan } from "./env-state.js";
 import { ConfigNamespacesError, EnvValidationError } from "./errors/index.js";
 import {
 	CONFIG_ENV_BINDING,
@@ -200,6 +201,8 @@ export function defineEnv(
 	const factories = resolveConfigs(configs, namespaces);
 
 	return (config) => {
+		markDefineEnvRan();
+
 		const bindings = factories
 			.map(bindingOf)
 			.filter((binding): binding is ConfigEnvBinding => binding !== undefined);
