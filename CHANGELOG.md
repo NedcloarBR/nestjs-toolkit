@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# [2.2.0](https://github.com/NedcloarBR/nestjs-toolkit/compare/v2.1.0...v2.2.0) - (2026-09-14)
+
+## Features
+
+- **config:** Let defineConfig factories run outside the app ([db41ae1](https://github.com/NedcloarBR/nestjs-toolkit/commit/db41ae1463c84f79daf4ce616db6660c62368df2))
+
 # [2.1.0](https://github.com/NedcloarBR/nestjs-toolkit/compare/v2.0.0...v2.1.0) - (2026-09-11)
 
 ## Documentation
