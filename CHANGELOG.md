@@ -1,6 +1,21 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+# [2.3.0](https://github.com/NedcloarBR/nestjs-toolkit/compare/v2.2.0...v2.3.0) - (2026-11-07)
+
+## Documentation
+
+- **readme:** Document the console ([adb61d8](https://github.com/NedcloarBR/nestjs-toolkit/commit/adb61d841969d3e2ec54b412fdada9b4c9079b24))
+
+## Features
+
+- **cli:** Configure the console in init ([f0a7429](https://github.com/NedcloarBR/nestjs-toolkit/commit/f0a74290266bebbad898efefacef521178942626))
+- **console:** Add Artisan-style console with prompts and mutexes ([81d5c4a](https://github.com/NedcloarBR/nestjs-toolkit/commit/81d5c4a503bc7ca4d2040c0314671c6e98e93a45))
+
+## Refactor
+
+- Enable strict mode across the project ([e5aa83e](https://github.com/NedcloarBR/nestjs-toolkit/commit/e5aa83ec285b14c335fadf2c12adec2ca3b3fc31))
+
 # [2.2.0](https://github.com/NedcloarBR/nestjs-toolkit/compare/v2.1.0...v2.2.0) - (2026-09-14)
 
 ## Features
