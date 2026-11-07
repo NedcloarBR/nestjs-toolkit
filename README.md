@@ -61,6 +61,7 @@ If you liked the project, feel free to leave a ⭐ here on Github for it to grow
 - 🧩 **Mixin Utilities** - Type-safe mixin composition with `CreateMixin`, `UseMixins`, `ComposeMixins`, and more
 - 🌐 **HTTP Utilities** - Adapter-agnostic base controller, filters, interceptors, middlewares, and param decorators
 - 🗂️ **Application Configuration** - File-name-derived config namespaces, directory auto-loading, and environment validation with class-validator or any Standard Schema
+- 🖥️ **Console** - Artisan-style commands for your application: signatures, interactive prompts, progress bars, exclusive locks (PostgreSQL or Redis), REPL and scaffolding
 - 🔠 **Utility Types** - Common TypeScript utility types (`Awaitable`, `Maybe`, `DeepPartial`, `Prettify`, and more)
 
 ## 📦 Installation
@@ -97,6 +98,11 @@ Optional peer dependencies, needed only by [Application Configuration](#🗂️-
 - `@nestjs/config` ^4 || ^12
 - `class-validator` ^0.14 || ^0.15 and `class-transformer` ^0.5 — for class-based env schemas
 - or any [Standard Schema](https://standardschema.dev) library (zod, valibot, arktype, …) instead
+
+Optional peer dependencies, needed only by the [Console](#🖥️-console) mutex adapters:
+
+- `@nestjs/typeorm` ^10 || ^11 || ^12 — for `typeOrmMutex()` (PostgreSQL)
+- `ioredis` ^5 || ^6 or `redis` ^4 || ^5 || ^6 — only for `redisMutex({ url })`; with `client`, any Redis client works
 
 > These are resolved lazily, so importing the package without them installed works fine.
 
@@ -167,6 +173,8 @@ nestjs-toolkit make:config mailer --schema zod
   }
 }
 ```
+
+With the console section of `init` answered, it also holds a `console` block for the [Console](#🖥️-console)'s `make:command`.
 
 Without the file, or without the `config` block, `make:config` falls back to `src/config` and `class-validator`. A flag always wins over the file.
 
@@ -960,6 +968,331 @@ Whatever `validate` returns *becomes* the module's validated environment, so the
 | `EnvNotInitializedError` | A `defineEnv` ran without validating a config's co-located schema — the config is missing from `configs`, or `load` is async |
 | `AsyncEnvSchemaError` | The Standard Schema validated asynchronously, which `ConfigModule` cannot await |
 | `MissingOptionalPeerError` | An optional peer dependency is not installed |
+
+## 🖥️ Console
+
+An [Artisan](https://laravel.com/docs/artisan)-style console for your own application, imported from `@nedcloarbr/nestjs-toolkit/console`. It runs **the live application** in a process of its own, without HTTP: commands use your services, repositories and config exactly as the server does, but alongside the server instead of inside it.
+
+```bash
+app list                          # commands grouped by namespace
+app help user:create              # usage of one command
+app user:create a@b.com --role=Admin --role=Manager
+app migrate --force
+app repl                          # tinker: a REPL with the application loaded
+app make:command reports:export --module=finance
+```
+
+> The console is a separate entry point: importing `@nedcloarbr/nestjs-toolkit` never loads it, and the console itself loads `node:repl`, `@nestjs/typeorm`, `ioredis` or `redis` only when you use the feature that needs them.
+
+### Quickstart
+
+**1. A command** — register it as a provider of the module whose services it uses:
+
+```typescript
+import { Command, ConsoleCommand } from "@nedcloarbr/nestjs-toolkit/console";
+
+@Command({
+	signature: "user:create {email : The address} {--role=* : Profiles} {--F|force}",
+	description: "Create a user",
+	exclusive: true,
+})
+export class UserCreateCommand extends ConsoleCommand {
+	public constructor(private readonly users: UsersService) {
+		super();
+	}
+
+	public async handle(): Promise<void> {
+		if (!(await this.confirmToProceed())) return;
+		const email = this.argument("email")!;
+		const password = await this.secret("Password?", { confirm: true });
+		await this.spin("Creating the user", () =>
+			this.users.create(email, password, this.options("role")),
+		);
+		this.info(`✔ ${email} created`);
+	}
+}
+```
+
+**2. The console module** — your application plus the console:
+
+```typescript
+import { Module } from "@nestjs/common";
+import { ConsoleModule, typeOrmMutex } from "@nedcloarbr/nestjs-toolkit/console";
+import { AppModule } from "./app.module.js";
+
+@Module({
+	imports: [
+		AppModule,
+		ConsoleModule.forRoot({
+			name: "app",
+			description: "My application",
+			isProduction: () => process.env.NODE_ENV === "production",
+			mutex: typeOrmMutex(), // optional, see Exclusive commands
+		}),
+	],
+})
+export class ConsoleAppModule {}
+```
+
+**3. The entry point** — `src/console.ts`. The module is a function so that the process is marked as a console run *before* your modules load:
+
+```typescript
+import { runConsole } from "@nedcloarbr/nestjs-toolkit/console";
+
+// A console run is a client beside the server: keep its pool small.
+process.env.DB_POOL_SIZE ??= "2";
+
+void runConsole({
+	module: async () => (await import("./console-app.module.js")).ConsoleAppModule,
+});
+```
+
+**4. Run it**
+
+```jsonc
+// package.json
+"scripts": {
+  "app": "node --env-file=.env --import @swc-node/register/esm-register src/console.ts"
+}
+```
+
+For a build, add `src/console.ts` as an extra entry point of your bundler (or `tsc` emits it next to `main.js`), and in a Docker image put a wrapper on the `PATH`:
+
+```dockerfile
+RUN printf '#!/bin/sh\nexec node /app/console.js "$@"\n' > /usr/local/bin/app && chmod +x /usr/local/bin/app
+```
+
+### Signature
+
+Artisan syntax, with an optional description after ` : ` in any `{…}`:
+
+| Syntax | Meaning | Read with |
+|--------|---------|-----------|
+| `{name}` | Required argument | `this.argument("name")` |
+| `{name?}` | Optional argument | `this.argument("name")` → `string \| undefined` |
+| `{name=x}` | Argument with default | `this.argument("name")` |
+| `{name*}` / `{name?*}` | The remaining words (last argument only) | `this.arguments("name")` |
+| `{--flag}` | Switch | `this.option("flag")` → `boolean` |
+| `{--name=}` | Option that takes a value | `this.option("name")` |
+| `{--name=x}` | Option with default | `this.option("name")` |
+| `{--name=*}` | Repeatable option | `this.options("name")` |
+| `{--F\|force}` | Shortcut | `-F` |
+
+On the command line, values go `--name=value`, `--name value` or `-S value`, and `--` ends the options: everything after it is a word, dashes included.
+
+### Global options
+
+| Option | Effect |
+|--------|--------|
+| `-h, --help` | Show the help of the command (`app <cmd> --help` = `app help <cmd>`) |
+| `-n, --no-interaction` | Ask nothing: prompts use their default, or the command fails telling which option to pass |
+| `-q, --quiet` | Show only warnings and errors |
+| `-v, --verbose` | Show the stack trace of an unexpected error |
+
+Without arguments the console runs `list`, and a mistyped command gets a suggestion (`Did you mean: greet?`).
+
+### Exit codes
+
+| Code | When |
+|------|------|
+| `0` | Success: `handle()` returned nothing, or `0` |
+| `1` | Failure: `this.fail(message)`, or an unexpected error (shown as `code message`) |
+| `2` | Wrong usage, unknown command, or a prompt that cannot be answered non-interactively |
+| `3` | An exclusive command is already running elsewhere |
+| `130` | Interrupted |
+| *n* | Whatever number `handle()` returns, or `this.fail(message, n)` |
+
+### `ConsoleCommand` API
+
+| Group | Methods |
+|-------|---------|
+| Input | `argument(name)`, `arguments(name)`, `option(name)`, `options(name)`, `hasOption(name)` |
+| Output | `line`, `newLine`, `info`, `comment`, `note`, `warn`, `error`, `alert`, `intro`, `outro`, `table(headers, rows)` |
+| Prompts | `ask`, `secret`, `confirm`, `select` (alias `choice`), `multiselect`, `search`, `suggest` |
+| Progress | `spin(label, work)`, `progress(total, label?)`, `withProgressBar(items, work)` |
+| Flow | `call(name, argv)`, `callSilently(name, argv)`, `checkpoint()`, `signal`, `interactive`, `confirmToProceed(warning?, when?)`, `fail(message, code?)` |
+
+`call` runs another command in the same process and answers its exit code, like Artisan's `$this->call()` — chain release steps and stop at the first that fails:
+
+```typescript
+for (const step of ["migrate --force", "params:sync", "cache:clear"]) {
+	const [name, ...argv] = step.split(" ");
+	const code = await this.call(name, argv);
+	if (code !== 0) return code;
+}
+```
+
+Each run keeps its input in an `AsyncLocalStorage`, so a command may call itself, directly or through others, without overwriting what its caller reads.
+
+### Prompts
+
+Moved through with the arrow keys on a terminal; with `-n`, or without a terminal (CI, pipes, cron), they answer with their default or fail with exit code `2` and a message naming the option to pass instead.
+
+```typescript
+const name = await this.ask("Name?", { default: "anon", validate: (v) => (v.length < 2 ? "Too short" : undefined) });
+const password = await this.secret("Password?", { confirm: true });
+const sure = await this.confirm("Continue?", true);
+const color = await this.select("Color?", { r: "Red", g: "Green" }, { default: "g" });
+const roles = await this.multiselect("Roles?", ["Admin", "Manager", "Viewer"], { required: true });
+const userId = await this.search("User?", async (query) =>
+	(await this.users.find(query)).map((u) => ({ value: u.id, label: u.email })),
+);
+const city = await this.suggest("City?", ["Recife", "Rio de Janeiro", "Salvador"]);
+```
+
+| Key | Effect |
+|-----|--------|
+| `↑` `↓` / `Tab` | Move (`Tab` accepts the highlighted suggestion in `suggest`) |
+| `Space` / `a` | Toggle one / all in `multiselect` |
+| `←` `→` / `y` `n` | Answer `confirm` |
+| `Enter` | Submit |
+| `Ctrl+C` | Interrupt (exit code `130`) |
+
+### Production and `--force`
+
+`confirmToProceed()` is Artisan's `ConfirmableTrait`. In production (`isProduction()`) it shows the warning and asks; with `--force` it goes ahead without asking — declare `{--force}` in the signature for that. Without a terminal it does not proceed, and says to pass `--force`.
+
+```text
+*******************************
+*  Application In Production  *
+*******************************
+
+? Are you sure you want to run this command?
+  ○ Yes / ● No
+```
+
+The texts are Artisan's by default. Change them for the whole console, or pass a warning per call:
+
+```typescript
+ConsoleModule.forRoot({
+	name: "app",
+	isProduction: () => process.env.NODE_ENV === "production",
+	confirmation: {
+		warning: "Production database",
+		question: "Run it anyway?",
+		cancelled: "Nothing was done.",
+	},
+});
+
+await this.confirmToProceed("This drops every session"); // custom warning
+await this.confirmToProceed(undefined, () => this.isShared()); // custom condition
+```
+
+### Exclusive commands
+
+`exclusive: true` takes a lock named after the command before it runs. If another run holds it, the command exits at once with code `3` instead of racing it — two `migrate` at the same time, from a deploy and from a person, never both apply the same migration. The lock is released when the command ends, however it ends.
+
+Where the lock lives is the `mutex` option:
+
+| Mutex | Seen by | Needs |
+|-------|---------|-------|
+| `LocalMutex` (default) | The same process only | — |
+| `typeOrmMutex(options?)` | Every process and machine on the same PostgreSQL database; freed by Postgres if the process dies | `@nestjs/typeorm` |
+| `redisMutex(options)` | Every process and machine on the same Redis or Valkey; freed after `ttl` if the process dies | Any Redis client |
+| Your class | Whatever it implements | `CommandMutex` |
+
+```typescript
+ConsoleModule.forRoot({ name: "app", mutex: typeOrmMutex() });
+ConsoleModule.forRoot({ name: "app", mutex: typeOrmMutex({ dataSource: "analytics" }) });
+// the client the application already has — here node-redis through @nestjs-redis/client
+ConsoleModule.forRoot({ name: "app", mutex: redisMutex({ client: RedisToken(), ttl: 60_000 }) });
+// or a connection of the console's own
+ConsoleModule.forRoot({ name: "app", mutex: redisMutex({ url: process.env.REDIS_URL! }) });
+```
+
+- **`typeOrmMutex`** uses `pg_try_advisory_lock`, with **one dedicated connection** for every lock the process holds: a command that calls another exclusive one holds two locks, and a connection per lock would exhaust a console's small pool.
+- **`redisMutex`** uses `SET NX PX`, renewed every `ttl / 3` while the command runs; only the run that took the lock can renew or release it. It only sends raw commands, so it is not tied to a client library:
+  - `client` — the token of the client your application already provides. [ioredis](https://github.com/redis/ioredis) and [iovalkey](https://github.com/valkey-io/iovalkey) (`call`), [node-redis](https://github.com/redis/node-redis) (`sendCommand`) and [valkey-glide](https://github.com/valkey-io/valkey-glide) (`customCommand`) are recognized; for any other, say how it sends a command:
+
+    ```typescript
+    redisMutex({ client: MY_REDIS, command: (client) => (args) => (client as MyClient).raw(args) });
+    ```
+
+  - `url` — a connection of the console's own, closed with it, opened with `ioredis` or `redis` (node-redis), whichever is installed; `driver: "ioredis" | "redis"` picks one.
+- **Your own:** implement `CommandMutex` — `acquire(name)` resolves to a release function, or to `null` at once when the name is taken — and pass the class as `mutex`.
+
+### Interruption
+
+The first `Ctrl+C` (or `SIGTERM`) aborts `this.signal`, and the command stops at its next `this.checkpoint()` with code `130`; the work done so far stays done. A second one ends the process at once.
+
+```typescript
+for (const batch of batches) {
+	this.checkpoint();
+	await this.import(batch);
+}
+```
+
+### Keeping schedulers out
+
+`isConsoleRuntime()` is true in a console process, so the server-only parts stay out of it:
+
+```typescript
+import { isConsoleRuntime } from "@nedcloarbr/nestjs-toolkit/console";
+
+@Module({
+	imports: [...(isConsoleRuntime() ? [] : [ScheduleModule.forRoot()])],
+})
+export class AppModule {}
+```
+
+### Built-in commands
+
+| Command | Description |
+|---------|-------------|
+| `list {namespace?}` | The commands, grouped by the namespace before `:` |
+| `help {command}` | The usage of a command |
+| `about {--only=} {--json}` | Application, versions, environment and console details; add sections with `forRoot({ about: () => ({ Cache: { Driver: "redis" } }) })` |
+| `repl` (alias `tinker`) | A REPL with the application loaded: `await get(UsersService).findOne(1)`, `methods(obj)` |
+| `make:command {name} {--module=} {--description=} {--exclusive}` | Writes a command into a module and registers it in the module's `providers` |
+| `completion {shell=bash}` | Prints a bash or zsh completion script |
+
+**Shell completion** — the script has every command and option written into it, so pressing `Tab` never boots the application. Regenerate it when commands change:
+
+```bash
+eval "$(app completion bash)"          # ~/.bashrc
+eval "$(app completion zsh)"           # ~/.zshrc, after compinit
+```
+
+**`make:command`** reads the `console` block of `nestjs-toolkit.json` (written by `nestjs-toolkit init`); every key is optional:
+
+```json
+{
+  "console": {
+    "sourceRoot": "src",
+    "modulesDir": "modules",
+    "commandsDir": "commands",
+    "importFrom": "@nedcloarbr/nestjs-toolkit/console"
+  }
+}
+```
+
+`app make:command reports:export --module=finance` writes `src/modules/finance/commands/reports-export.command.ts` and adds `ReportsExportCommand` to `src/modules/finance/finance.module.ts`. Without `--module` it lets you pick the module; without a modules directory, it writes to `src/commands/` and tells you to register it. When the module file has anything other than one `@Module` with one `providers: [ … ]`, it tells you to register the command by hand instead of guessing. `forRoot({ sourceRoot })` overrides the directory — useful with `dirname(fileURLToPath(import.meta.url))`. In a built image there is no source, and the command says so.
+
+### Testing and embedding
+
+`createConsole()` is `runConsole()` without the signal handlers and the `process.exit`:
+
+```typescript
+const app = await createConsole({ module: () => ConsoleAppModule });
+const code = await app.run(["user:create", "a@b.com", "--force"], false);
+await app.close();
+```
+
+### API Reference
+
+| Export | Description |
+|--------|-------------|
+| `runConsole({ module, argv?, logger? })` | Runs one command line and exits with its code |
+| `createConsole({ module, logger? })` | The console without exiting: `{ app, kernel, run, interrupt, close }` |
+| `ConsoleModule.forRoot(options)` | `name`, `description?`, `version?`, `isProduction?`, `sourceRoot?`, `confirmation?`, `about?`, `mutex?` |
+| `@Command(options)` | `signature`, `description`, `exclusive?`, `hidden?`, `aliases?` |
+| `ConsoleCommand` | The base class of every command |
+| `ConsoleKernel` / `CommandRegistry` | Run commands by name / find them |
+| `typeOrmMutex`, `TypeOrmAdvisoryMutex`, `redisMutex`, `RedisMutex`, `toRedisCommand`, `LocalMutex`, `CommandMutex`, `CONSOLE_MUTEX` | Exclusive locks |
+| `CommandFailed`, `InputError`, `PromptUnavailableError`, `SignatureError` | Errors, with their exit codes above |
+| `ExitCode` | `SUCCESS`, `FAILURE`, `USAGE`, `LOCKED`, `INTERRUPTED` |
+| `isConsoleRuntime()` | Whether the process is a console run |
+| `parseSignature`, `parseInput`, `Output`, `Prompt`, `ProgressBar` | The building blocks, for custom tooling |
 
 ## 🔠 Utility Types
 
