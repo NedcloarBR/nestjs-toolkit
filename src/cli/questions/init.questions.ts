@@ -36,4 +36,14 @@ export class InitQuestions {
 	public parseConfigSchema(value: ConfigSchemaKind) {
 		return value;
 	}
+
+	@Question({
+		name: "configureConsole",
+		message: "Configure the console (make:command) too?",
+		type: "confirm",
+		default: false,
+	})
+	public parseConfigureConsole(value: boolean) {
+		return value;
+	}
 }
