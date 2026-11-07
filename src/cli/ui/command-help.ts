@@ -1,10 +1,11 @@
 import chalk from "chalk";
+import type { Command } from "commander";
 import { CommandCategories, type CommandType } from "../types/index.js";
 import { banner } from "./banner.js";
 
 export function commandHelp(
 	commands: CommandType[],
-	cmd,
+	cmd: Command,
 	showBanner = true,
 ): string {
 	const command = commands.find((c) => c.name === cmd.name());
@@ -13,9 +14,10 @@ export function commandHelp(
 
 	const metadata = `Command name: ${chalk.green(cmd.name())}\nCategory: ${chalk.cyan(command.category)}\nDescription: ${command.description}`;
 	const aliases = `Aliases: ${
-		// biome-ignore lint/complexity/useLiteralKeys: magic access to private property
-		cmd["_aliases"].map((alias) => chalk.yellow(alias)).join(", ") ||
-		chalk.gray("No aliases")
+		cmd
+			.aliases()
+			.map((alias) => chalk.yellow(alias))
+			.join(", ") || chalk.gray("No aliases")
 	}\n`;
 
 	const usage = `Usage: ${cmd.name()} ${cmd.usage()}`;

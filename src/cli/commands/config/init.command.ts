@@ -5,6 +5,7 @@ import {
 	InquirerService,
 	Option,
 } from "nest-commander";
+import type { ConsoleMakeConfig } from "../../../package/console/options/toolkit-config.js";
 import { CommandExtra } from "../../common/decorators/command-extras.decorator.js";
 import { ConfigService } from "../../services/index.js";
 import { CommandCategories } from "../../types/categories.js";
@@ -49,9 +50,14 @@ export class InitCommand extends CommandRunner {
 			undefined,
 		);
 
+		const consoleConfig = answers.configureConsole
+			? await this.inquirerService.ask<ConsoleMakeConfig>("console", undefined)
+			: undefined;
+
 		this.configService.createConfigFile({
 			envFilePath: answers.envFilePath,
 			config: { dir: answers.configDir, schema: answers.configSchema },
+			...(consoleConfig && { console: consoleConfig }),
 		});
 
 		process.exit(0);

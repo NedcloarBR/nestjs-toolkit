@@ -1,3 +1,5 @@
+import type { ConsoleMakeConfig } from "../../package/console/options/toolkit-config.js";
+
 export type ConfigSchemaKind =
 	| "class-validator"
 	| "zod"
@@ -24,12 +26,15 @@ export interface ConfigFile {
 		/** Schema `make:config` declares the env variables with. */
 		schema?: ConfigSchemaKind;
 	};
+	/** Where the console's `make:command` writes. */
+	console?: Partial<ConsoleMakeConfig>;
 }
 
 export interface InitAnswers {
 	envFilePath: string;
 	configDir: string;
 	configSchema: ConfigSchemaKind;
+	configureConsole: boolean;
 }
 
 export function isConfigSchemaKind(value: unknown): value is ConfigSchemaKind {
